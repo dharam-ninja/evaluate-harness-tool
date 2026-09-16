@@ -1,0 +1,1 @@
+claude -p --output-format stream-json --verbose --include-hook-events --model claude-haiku-4-5 --permission-mode acceptEdits --permission-prompts none --allowedTools "Bash(cd *)" "Bash(python *)" "Bash(ruff *)" "Bash(mypy *)" "Bash(PYTHONPATH=* *)" "Bash(*python -m pytest*)" Read Edit Write Glob Grep --no-session-persistence --setting-sources project --max-budget-usd 2.0

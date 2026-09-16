@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 58138,
+  "stop_reason": "end_turn",
+  "session_id": "2b827a54-32e3-48ed-8a17-62f971823bb4",
+  "total_cost_usd": 0.1078041,
+  "usage": {
+    "input_tokens": 115,
+    "cache_creation_input_tokens": 18114,
+    "cache_read_input_tokens": 497051,
+    "output_tokens": 4100,
+    "output_tokens_details": {
+      "thinking_tokens": 1655
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 18114,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 51,
+        "cache_read_input_tokens": 40495,
+        "cache_creation_input_tokens": 852,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 852
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001256,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 115,
+      "outputTokens": 4100,
+      "cacheReadInputTokens": 497051,
+      "cacheCreationInputTokens": 18114,
+      "webSearchRequests": 0,
+      "costUSD": 0.1065481,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 1655,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 18,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done! Fixed the unused variable issue by removing the binding. All tests pass and verification checks complete successfully.",
+  "ttft_ms": 3780,
+  "type": "result",
+  "duration_ms": 74718,
+  "uuid": "190df0c1-4ca0-4eac-a124-44860551f1e2",
+  "ttft_stream_ms": 1725,
+  "time_to_request_ms": 583,
+  "first_content_frame_ms": 1726,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

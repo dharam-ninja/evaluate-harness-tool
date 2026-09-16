@@ -1,0 +1,73 @@
+# Prose vs mechanism, on the same model.
+#
+# Across 104 trials this project measured the agent reading AGENTS.md every time and
+# running ruff/mypy in 1 trial out of 8. A written instruction is a hope; a hook is a
+# control. This tests whether that is true.
+#
+#   Harness 1 (baseline)  AGENTS.md asking for pytest + ruff + mypy
+#   Harness 2 (candidate) a Stop hook that RUNS them and blocks completion on failure
+#
+# Haiku, not Sonnet: every earlier run hit a ceiling (Sonnet passed with or without
+# guidance) or a floor (a 360M local model failed either way). Haiku is weak enough to
+# fail sometimes and strong enough to succeed sometimes, which is where guidance has room.
+
+repo: examples/demo-notify
+
+change: >-
+  Harness 1 is told in AGENTS.md to run pytest, ruff and mypy --strict before finishing.
+  Harness 2 is told nothing and instead carries a .claude/ Stop hook that runs the same
+  three checks and blocks completion while any of them fails. Same model, same task, same
+  tools, permissions, budget and environment. Prose against mechanism.
+
+# Both arms carry exactly one of the two, so both fields differ by design.
+intended_difference:
+  - instructions
+  - config_dir
+
+# --include-hook-events so the transcript records whether the hook actually fired.
+# --setting-sources project so the workspace's own .claude/settings.json is loaded and
+# the operator's personal settings are not.
+x-command: &cmd >-
+  claude -p --output-format stream-json --verbose --include-hook-events --model {model}
+  --permission-mode acceptEdits --permission-prompts none
+  --allowedTools "Bash(cd *)" "Bash(python *)" "Bash(ruff *)" "Bash(mypy *)"
+  "Bash(PYTHONPATH=* *)" "Bash(*python -m pytest*)"
+  Read Edit Write Glob Grep
+  --no-session-persistence --setting-sources project
+  --max-budget-usd {budget}
+
+harnesses:
+  baseline:
+    description: Harness 1 - Haiku + AGENTS.md asking for the checks (prose)
+    command: *cmd
+    model: claude-haiku-4-5
+    budget: 2.00
+    instructions: examples/harnesses/prose-arm/AGENTS.md
+    config_dir: null
+  candidate:
+    description: Harness 2 - Haiku + a Stop hook that runs the checks (mechanism)
+    command: *cmd
+    model: claude-haiku-4-5
+    budget: 2.00
+    instructions: null
+    config_dir: examples/harnesses/hook-arm
+
+reps: 8
+timeout_s: 900
+jobs: 1
+
+tasks:
+  - notify-fallback
+
+dimensions:
+  - correctness
+  - fidelity
+  - regression
+  - conventions
+
+graders:
+  - {id: acceptance,  command: "pytest -q tests/acceptance", critical: true,  dimension: correctness}
+  - {id: heldout,     command: "pytest -q tests/heldout",    critical: true,  dimension: fidelity, overlay: heldout}
+  - {id: regressions, command: "pytest -q tests/regression", critical: true,  dimension: regression}
+  - {id: lint,        command: "ruff check .",               critical: false, dimension: conventions}
+  - {id: types,       command: "mypy src",                   critical: false, dimension: conventions}

@@ -1,0 +1,219 @@
+{# Plain-text evaluation report. One block per dimension, evidence under each, a cost
+   verdict, then the recommendation. Every evidence line names a file that exists. #}
+Evaluation Report
+
+Harness Change:
+{{ r.change or "not described in eval.yaml" }}
+
+Baseline:
+{{ r.baseline_description or r.baseline_name }}
+
+Candidate:
+{{ r.candidate_description or r.candidate_name }}
+
+Models:
+Baseline  {{ r.baseline_model or "not recorded" }}  via {{ r.baseline_provider or "not recorded" }}
+Candidate {{ r.candidate_model or "not recorded" }}  via {{ r.candidate_provider or "not recorded" }}
+
+Controlled:
+{{ "YES" if r.controlled else "NO - see fairness in manifest.json" }}. Intended variable: {{ r.intended_difference | join(", ") or "not recorded" }}
+
+Run:
+{{ r.run_id }}: {{ r.comparisons | length }} tasks x 2 harnesses x {{ r.reps }} reps = {{ r.comparisons | length * 2 * r.reps }} trials
+{% if r.jobs > 1 %}
+
+WARNING:
+Trials ran concurrently (jobs={{ r.jobs }}). Wall-clock figures are not comparable.
+{% endif %}
+
+================================
+
+
+Task Outcomes
+
+{% for c in r.comparisons %}
+{{ c.task_id }}:
+{{ c.baseline.value | upper }} -> {{ c.candidate.value | upper }}  ({{ label[c.transition] | replace("**", "") }})
+{% endfor %}
+
+Improved:
+{{ r.improvements | length }}
+
+Regressed:
+{{ r.regressions | length }}
+{% if r.unstable or r.unmeasured %}
+
+Excluded from those counts:
+{{ r.unstable | length }} unstable, {{ r.unmeasured | length }} unmeasured
+{% endif %}
+
+Evidence:
+
+Per-task detail:
+{% for c in r.comparisons %}
+{{ task_link(c.task_id) }}
+{% endfor %}
+{% for d in r.dimensions %}
+
+================================
+
+
+{{ d.dimension | replace("_", " ") | title }}
+
+Baseline:
+{{ d.baseline_pass }}/{{ d.total }}
+
+Candidate:
+{{ d.candidate_pass }}/{{ d.total }}
+{% if d.noisy %}
+
+NOT SELF-CONSISTENT:
+{{ d.baseline_unstable }} baseline and {{ d.candidate_unstable }} candidate task(s) gave
+different results across reps of the same harness. Any difference above is at least
+partly noise.
+{% endif %}
+
+Evidence:
+{% for row in evidence[d.dimension] %}
+
+{{ row.grader }}:
+Baseline passed {{ row.baseline[0] }}/{{ row.baseline[1] }} trials
+Candidate passed {{ row.candidate[0] }}/{{ row.candidate[1] }} trials
+{% if row.example_failure_log %}
+Example failure log: {{ row.example_failure_log }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+================================
+
+
+Cost
+
+Baseline:
+{{ r.cost.baseline_usd | money }} per trial
+{% if r.cost.baseline_tokens %}
+{{ (r.cost.baseline_tokens / 1000) | round | int }}k tokens per trial
+{% endif %}
+
+Candidate:
+{{ r.cost.candidate_usd | money }} per trial
+{% if r.cost.candidate_tokens %}
+{{ (r.cost.candidate_tokens / 1000) | round | int }}k tokens per trial
+{% endif %}
+
+Change:
+{{ r.cost.delta_pct | pct }} cost, {{ r.cost.token_delta_pct | pct }} tokens, {{ r.cost.wall_delta_pct | pct }} wall-clock
+
+{{ r.cost.impact | upper }}
+
+Evidence:
+
+Trials counted:
+{{ r.cost.trials_counted }} counted, {{ r.cost.trials_excluded }} excluded
+
+Per-trial figures:
+each trial's own transcript.json, field total_cost_usd
+{% for c in r.cost.caveats %}
+
+Caveat:
+{{ c }}
+{% endfor %}
+{% if invariant %}
+
+================================
+
+
+Graders That Never Varied
+
+These returned the same non-passing verdict in every trial of BOTH harnesses, so they
+cancel out of every comparison above and say nothing about the change under test.
+
+Two different things look identical here. Read the log before deciding which you have:
+an instrument defect, where the task is written so no correct solution can pass; or a
+genuine shared failure, where both harnesses really did miss the same requirement.
+{% for row in invariant %}
+
+{{ row.task }} / {{ row.grader }}:
+{{ row.verdict }} in all trials, {{ task_link(row.task) }}
+{% endfor %}
+{% endif %}
+
+================================
+
+
+Business Fidelity
+
+Not generated. The graders answer "do the tests pass". They cannot answer "is this what
+the business asked for". Fill this in after reading the patches.
+{% for c in r.comparisons %}
+
+[ ] {{ c.task_id }}:
+Read both arms' patches at {{ task_link(c.task_id) }}. Does the candidate's change do
+what the ticket asked, beyond satisfying the tests?
+{% endfor %}
+
+[ ] Any patch you would reject at code review?
+
+[ ] Any patch that edited tests rather than source?
+
+
+================================
+
+
+Final Recommendation:
+
+{{ r.recommendation.value }} - {{ r.confidence.value }} confidence
+
+{% if r.regressions %}
+Candidate regressed {{ r.regressions | length }} task(s) the baseline passed. A regression
+outranks every other signal in the rule.
+{% elif r.improvements %}
+Candidate improved {{ r.improvements | length }} task(s) and regressed none.
+{% else %}
+No task changed state in either direction. The suite could not distinguish the two
+harnesses on the outcomes it measures.
+{% endif %}
+{% if r.cost.impact != "No material impact" and r.cost.delta_pct is not none %}
+Cost moved {{ r.cost.delta_pct | pct }}: {{ r.cost.impact | lower }}.
+{% endif %}
+
+Human review recommended.
+
+
+Why this verdict:
+
+Rule fired:
+{{ r.rule_fired }}
+
+The rule, evaluated top to bottom, first match wins. Printed from the same ordered list
+the code evaluates, so it cannot drift from the decision:
+{% for line in r.rule_text %}
+{{ loop.index }}. {{ line }}
+{% endfor %}
+
+Confidence is never reported as HIGH. A {{ r.comparisons | length }}-task suite cannot
+support a strong claim in either direction.
+{% if r.caveats %}
+
+Read before acting:
+{% for c in r.caveats %}
+
+- {{ c }}
+{% endfor %}
+{% endif %}
+
+
+================================
+
+
+How To Verify Any Number Above
+
+{{ r.run_id }}/
+  report.md report.json         this report, and the same content as data
+  tasks/<task>.md               per-task drill-down, both arms, every rep
+  trials/<task>/<arm>/<rep>/
+    patch.diff                  exactly what the agent changed
+    transcript.json             the agent's own envelope: cost, tokens, turns
+    prompt.txt command.txt      what it was asked, and how it was invoked
+    graders/<id>.log            each grader's command, exit code and output

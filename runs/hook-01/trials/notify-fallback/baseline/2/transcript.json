@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 37612,
+  "stop_reason": "end_turn",
+  "session_id": "2c9e365e-629f-4613-98e0-e7e1d4024817",
+  "total_cost_usd": 0.0877134,
+  "usage": {
+    "input_tokens": 81,
+    "cache_creation_input_tokens": 16596,
+    "cache_read_input_tokens": 340294,
+    "output_tokens": 3832,
+    "output_tokens_details": {
+      "thinking_tokens": 1597
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 16596,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 638,
+        "cache_read_input_tokens": 38890,
+        "cache_creation_input_tokens": 939,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 939
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001251,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 81,
+      "outputTokens": 3832,
+      "cacheReadInputTokens": 340294,
+      "cacheCreationInputTokens": 16596,
+      "webSearchRequests": 0,
+      "costUSD": 0.0864624,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 1597,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 15,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done! I've added retry and fallback behavior to `send_notification()`. Here's what the implementation does:\n\n**Key features:**\n1. **Email with retry** \u2014 Uses `call_with_retry()` to attempt email delivery up to 3 times with delays between attempts\n2. **Selective retry** \u2014 Only `TransientDeliveryError` is retried; permanent failures propagate immediately  \n3. **SMS fallback** \u2014 If email fails, falls back to SMS if a phone number exists\n4. **SMS with retry** \u2014 Applies the same 3-attempt retry logic to SMS\n5. **No phone? Fail immediately** \u2014 If the recipient has no phone number, re-raises the email exception unchanged\n6. **Clean exception handling** \u2014 If SMS fails, the caller receives the SMS exception directly (not wrapped)\n7. **Proper logging** \u2014 Logs \"falling back to sms after email failure\" when the fallback occurs\n\nThe solution leverages the existing `call_with_retry()` utility which already handles the delay logic correctly (no wait after final attempt) and proper error classification.\n\nAll 15 tests pass, including both acceptance tests that verify the basic flow and fallback behavior.",
+  "ttft_ms": 2206,
+  "type": "result",
+  "duration_ms": 44629,
+  "uuid": "fb184f84-7c16-42e4-ad98-8625e6a7957d",
+  "ttft_stream_ms": 1666,
+  "time_to_request_ms": 455,
+  "first_content_frame_ms": 1666,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

@@ -1,0 +1,68 @@
+{# Per-task drill-down: both arms, every rep, with links to the raw evidence. #}
+# `{{ c.task_id }}`
+
+[← back to the report](../report.md)
+
+**Baseline {{ c.baseline.value }} -> Candidate {{ c.candidate.value }} ({{ label }})**
+
+{% if c.divergences %}
+## A green suite did not mean correct behaviour
+
+The visible acceptance tests passed and the held-out tests, which the agent never saw and
+could not have satisfied by inspection, failed. This is the failure mode the fidelity
+dimension exists to catch: the patch satisfies the suite and still misses the stated rule.
+
+{% for d in c.divergences %}
+- {{ d }}
+{% endfor %}
+
+Compare the patch against the ticket below, then read the held-out grader log for the trial.
+
+{% endif %}
+## Trials
+
+{% for arm, trials in c.trials.items() %}
+### {{ arm }}
+
+{% if not trials %}
+No trials recorded for this arm.
+{% else %}
+| Rep | Status | {% for g in trials[0].graders %}{{ g.id }} | {% endfor %}Cost | Wall | Files | Evidence |
+|---|---|{% for g in trials[0].graders %}---|{% endfor %}---|---|---|---|
+{% for t in trials %}
+| {{ t.rep }} | {{ t.status.value }} | {% for g in t.graders %}[{{ mark[g.status] }}]({{ trial_link(t, g.log_path or '') }}) | {% endfor %}{% if t.usage.total_cost_usd is not none %}${{ "%.4f" | format(t.usage.total_cost_usd) }}{% else %}n/a{% endif %} | {{ "%.1f" | format(t.wall_clock_s) }}s | {{ t.files_changed | length }} | [patch]({{ trial_link(t, 'patch.diff') }}), [transcript]({{ trial_link(t, 'transcript.json') }}) |
+{% endfor %}
+
+{% for t in trials %}
+{% if t.error %}
+- rep {{ t.rep }}: {{ t.error }}
+{% endif %}
+{% if t.usage.permission_denials %}
+- rep {{ t.rep }}: {{ t.usage.permission_denials | length }} permission denial(s) : the agent was blocked from a tool it tried to use
+{% endif %}
+{% if t.files_changed %}
+- rep {{ t.rep }} touched: {% for f in t.files_changed %}`{{ f }}`{{ ", " if not loop.last }}{% endfor %}
+
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+## The ticket the agent was given
+
+Identical for both arms. The only difference between them is the harness.
+
+{% for arm, trials in c.trials.items() %}
+{% if trials %}
+- {{ arm }}: [prompt]({{ trial_link(trials[0], 'prompt.txt') }}), [invocation]({{ trial_link(trials[0], 'command.txt') }})
+{% endif %}
+{% endfor %}
+
+Diff the two `prompt.txt` files to confirm the arms received the same instruction; diff the
+two `command.txt` files to see exactly what differed between the harnesses.
+
+## What to check by hand
+
+- [ ] Read a patch from each arm. Do they differ in ways the graders cannot see?
+- [ ] Where a grader failed, does its log show a real defect or a broken grader?
+- [ ] Where both arms passed, is either patch something you would reject at review?

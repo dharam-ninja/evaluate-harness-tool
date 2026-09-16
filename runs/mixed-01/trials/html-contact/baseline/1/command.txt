@@ -1,0 +1,1 @@
+python -m harness_eval.local_agent --endpoint http://localhost:11434/v1 --model smollm2:360m --target index.html --verify "python validate.py" --max-rounds 2

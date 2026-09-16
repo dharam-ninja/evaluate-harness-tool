@@ -1,0 +1,24 @@
+id: add-cli-flag
+
+prompt: |
+  Finance wants to preview amounts at more than two decimal places without changing what
+  the ledger stores.
+
+  Add a `--precision` flag to the `demo` command in src/demo/cli.py. It takes a whole
+  number from 0 to 6 inclusive and defaults to 2. Values outside that range, or values
+  that are not whole numbers, should be rejected by the command line parser itself
+  rather than reaching application code.
+
+  Follow the conventions this repository already uses for command line flags.
+
+  Tests covering the ticket are in tests/acceptance/. Do not edit them.
+
+acceptance_tests: examples/tasks/add-cli-flag/acceptance
+heldout_tests: examples/heldout/add-cli-flag
+
+notes: |
+  Loads CONVENTIONS. "Follow the conventions this repository already uses" is the whole
+  point: they are discoverable from pyproject.toml and docs/cli.md, but only the
+  candidate AGENTS.md states them. The held-out tests check the documented range
+  validation and that docs/cli.md was updated, neither of which the acceptance suite
+  touches.

@@ -1,0 +1,36 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Local credentials and machine-specific settings. .env.example is the tracked template;
+# .env itself never is. Config files reference ${VAR}, so the secret lives here and not
+# in any file git can see.
+.env
+.env.*
+!.env.example
+
+# Trial artifacts are large and re-creatable, so runs are ignored by default.
+# The demonstration runs are re-included by name, one rule each, so a reviewer can
+# render their reports offline. Re-including the DIRECTORY (trailing slash) is what
+# makes this work: `runs/*` excludes `runs/hook-01` itself, and git will not descend
+# into an excluded directory, so a contents pattern like `!runs/hook-01/**` matches
+# nothing. `runs/*` does not reach the files below it -- `*` spans one path segment --
+# so re-including the directory is enough to track everything inside it.
+#
+# To add another demonstration run, add one line here. No `git add -f`: force-adding
+# marks a file tracked in THIS index only, so the sample runs silently disappear the
+# moment the code is copied or vendored into another repository.
+runs/*
+!runs/.gitkeep
+!runs/hook-01/
+!runs/mixed-01/
+
+# Trial workspaces are full repo copies containing nested .git dirs, and are
+# re-creatable from patch.diff. Never commit these.
+runs/*/workspaces/

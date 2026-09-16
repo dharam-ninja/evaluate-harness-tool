@@ -1,0 +1,15 @@
+grader   : types
+dimension: conventions  critical=False
+command  : mypy src
+overlay  : -
+status   : pass
+exit code: 0
+duration : 0.52s
+reason   : -
+
+--- stdout (tail) ---
+Success: no issues found in 6 source files
+
+
+--- stderr (tail) ---
+

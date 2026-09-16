@@ -1,0 +1,15 @@
+grader   : lint
+dimension: conventions  critical=False
+command  : ruff check .
+overlay  : -
+status   : pass
+exit code: 0
+duration : 0.12s
+reason   : -
+
+--- stdout (tail) ---
+All checks passed!
+
+
+--- stderr (tail) ---
+

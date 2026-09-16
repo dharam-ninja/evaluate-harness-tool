@@ -1,0 +1,2267 @@
+{
+  "run_id": "hook-01",
+  "created_utc": "2026-09-16T12:12:38.416320+00:00",
+  "config": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\examples\\eval-hook.yaml",
+  "repo": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\examples\\demo-notify",
+  "change": "Harness 1 is told in AGENTS.md to run pytest, ruff and mypy --strict before finishing. Harness 2 is told nothing and instead carries a .claude/ Stop hook that runs the same three checks and blocks completion while any of them fails. Same model, same task, same tools, permissions, budget and environment. Prose against mechanism.",
+  "reps": 8,
+  "jobs": 1,
+  "schedule": "counterbalanced-task-rep",
+  "fairness": {
+    "intended_difference": [
+      "instructions",
+      "config_dir"
+    ],
+    "identical": {
+      "command": true,
+      "model": true,
+      "endpoint": true,
+      "budget": true,
+      "env": true
+    },
+    "differs_as_intended": {
+      "instructions": {
+        "baseline": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\examples\\harnesses\\prose-arm\\AGENTS.md",
+        "candidate": null
+      },
+      "config_dir": {
+        "baseline": null,
+        "candidate": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\examples\\harnesses\\hook-arm"
+      }
+    },
+    "models": {
+      "baseline": {
+        "model": "claude-haiku-4-5",
+        "provider": "default (CLI-configured)"
+      },
+      "candidate": {
+        "model": "claude-haiku-4-5",
+        "provider": "default (CLI-configured)"
+      }
+    },
+    "controlled": true
+  },
+  "dimensions": [
+    "correctness",
+    "fidelity",
+    "regression",
+    "conventions"
+  ],
+  "harnesses": {
+    "baseline": {
+      "name": "baseline",
+      "description": "Harness 1 - Haiku + AGENTS.md asking for the checks (prose)",
+      "command": "claude -p --output-format stream-json --verbose --include-hook-events --model {model} --permission-mode acceptEdits --permission-prompts none --allowedTools \"Bash(cd *)\" \"Bash(python *)\" \"Bash(ruff *)\" \"Bash(mypy *)\" \"Bash(PYTHONPATH=* *)\" \"Bash(*python -m pytest*)\" Read Edit Write Glob Grep --no-session-persistence --setting-sources project --max-budget-usd {budget}",
+      "model": "claude-haiku-4-5",
+      "endpoint": null,
+      "budget": 2.0,
+      "instructions": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\examples\\harnesses\\prose-arm\\AGENTS.md",
+      "config_dir": null,
+      "env": {}
+    },
+    "candidate": {
+      "name": "candidate",
+      "description": "Harness 2 - Haiku + a Stop hook that runs the checks (mechanism)",
+      "command": "claude -p --output-format stream-json --verbose --include-hook-events --model {model} --permission-mode acceptEdits --permission-prompts none --allowedTools \"Bash(cd *)\" \"Bash(python *)\" \"Bash(ruff *)\" \"Bash(mypy *)\" \"Bash(PYTHONPATH=* *)\" \"Bash(*python -m pytest*)\" Read Edit Write Glob Grep --no-session-persistence --setting-sources project --max-budget-usd {budget}",
+      "model": "claude-haiku-4-5",
+      "endpoint": null,
+      "budget": 2.0,
+      "instructions": null,
+      "config_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\examples\\harnesses\\hook-arm",
+      "env": {}
+    }
+  },
+  "tasks": [
+    "notify-fallback"
+  ],
+  "graders": [
+    {
+      "id": "acceptance",
+      "command": "pytest -q tests/acceptance",
+      "dimension": "correctness",
+      "critical": true,
+      "overlay": null,
+      "timeout_s": 300
+    },
+    {
+      "id": "heldout",
+      "command": "pytest -q tests/heldout",
+      "dimension": "fidelity",
+      "critical": true,
+      "overlay": "heldout",
+      "timeout_s": 300
+    },
+    {
+      "id": "regressions",
+      "command": "pytest -q tests/regression",
+      "dimension": "regression",
+      "critical": true,
+      "overlay": null,
+      "timeout_s": 300
+    },
+    {
+      "id": "lint",
+      "command": "ruff check .",
+      "dimension": "conventions",
+      "critical": false,
+      "overlay": null,
+      "timeout_s": 300
+    },
+    {
+      "id": "types",
+      "command": "mypy src",
+      "dimension": "conventions",
+      "critical": false,
+      "overlay": null,
+      "timeout_s": 300
+    }
+  ],
+  "trials": [
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 0,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 52.89,
+      "usage": {
+        "total_cost_usd": 0.0858012,
+        "input_tokens": 81,
+        "output_tokens": 3540,
+        "cache_creation_input_tokens": 16508,
+        "cache_read_input_tokens": 337532,
+        "num_turns": 16,
+        "duration_ms": 50589,
+        "duration_api_ms": 45043,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 81,
+            "outputTokens": 3540,
+            "cacheReadInputTokens": 337532,
+            "cacheCreationInputTokens": 16508,
+            "webSearchRequests": 0,
+            "costUSD": 0.08455019999999999,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 1452,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [
+          {
+            "tool_name": "Bash",
+            "tool_use_id": "toolu_01YZBVJcaotVhrUuNRiYR7yX",
+            "tool_input": {
+              "command": "Get-ChildItem -Path \"src\\notifier\" -Recurse -File | Select-Object -ExpandProperty FullName"
+            }
+          }
+        ],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "df4f74c8-c6d3-4f30-b33c-97a8d17a5d7e"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1294,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Bash": 2,
+        "Glob": 3,
+        "Read": 9,
+        "Edit": 1
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_channels.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.73,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 0.97,
+          "log_path": "graders/heldout.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.78,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.09,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.14,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\0",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\0"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 0,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 75.19,
+      "usage": {
+        "total_cost_usd": 0.12612039999999997,
+        "input_tokens": 115,
+        "output_tokens": 5982,
+        "cache_creation_input_tokens": 21037,
+        "cache_read_input_tokens": 527704,
+        "num_turns": 20,
+        "duration_ms": 73228,
+        "duration_api_ms": 60958,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 115,
+            "outputTokens": 5982,
+            "cacheReadInputTokens": 527704,
+            "cacheCreationInputTokens": 21037,
+            "webSearchRequests": 0,
+            "costUSD": 0.12486939999999998,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 3280,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "b2bd5c54-2817-4cc1-84ba-b01f7bfe9b7c"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1084,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Bash": 6,
+        "Read": 10,
+        "Edit": 2
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_channels.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 4,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.69,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.78,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.77,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.08,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.55,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\0",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\0"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 1,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 91.97,
+      "usage": {
+        "total_cost_usd": 0.1419871,
+        "input_tokens": 155,
+        "output_tokens": 5544,
+        "cache_creation_input_tokens": 21398,
+        "cache_read_input_tokens": 700651,
+        "num_turns": 19,
+        "duration_ms": 90019,
+        "duration_api_ms": 78558,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 155,
+            "outputTokens": 5544,
+            "cacheReadInputTokens": 700651,
+            "cacheCreationInputTokens": 21398,
+            "webSearchRequests": 0,
+            "costUSD": 0.1407361,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 2759,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "2c2a41f1-6cf7-40cb-a3b0-772fa4590636"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1025,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Bash": 4,
+        "Read": 11,
+        "Edit": 2
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_channels.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 4,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.7,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.78,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.75,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.06,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.52,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\1",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\1"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 1,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 60.58,
+      "usage": {
+        "total_cost_usd": 0.0849684,
+        "input_tokens": 65,
+        "output_tokens": 4612,
+        "cache_creation_input_tokens": 17002,
+        "cache_read_input_tokens": 265834,
+        "num_turns": 13,
+        "duration_ms": 58676,
+        "duration_api_ms": 53674,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 16,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001256,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 65,
+            "outputTokens": 4612,
+            "cacheReadInputTokens": 265834,
+            "cacheCreationInputTokens": 17002,
+            "webSearchRequests": 0,
+            "costUSD": 0.0837124,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 2588,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [
+          {
+            "tool_name": "Bash",
+            "tool_use_id": "toolu_01EmowmgQftkJ3rZrGuTctYy",
+            "tool_input": {
+              "command": "Get-ChildItem -Recurse -Path . -Include \"*.py\" | Select-Object -ExpandProperty FullName | head -20"
+            }
+          }
+        ],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "7cda4528-b39a-4b8a-adad-d78430eef349"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1089,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Bash": 2,
+        "Glob": 1,
+        "Read": 8,
+        "Edit": 1
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.74,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 0.92,
+          "log_path": "graders/heldout.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.77,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.11,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.19,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\1",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\1"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 2,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 46.64,
+      "usage": {
+        "total_cost_usd": 0.0877134,
+        "input_tokens": 81,
+        "output_tokens": 3832,
+        "cache_creation_input_tokens": 16596,
+        "cache_read_input_tokens": 340294,
+        "num_turns": 15,
+        "duration_ms": 44629,
+        "duration_api_ms": 37612,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 81,
+            "outputTokens": 3832,
+            "cacheReadInputTokens": 340294,
+            "cacheCreationInputTokens": 16596,
+            "webSearchRequests": 0,
+            "costUSD": 0.0864624,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 1597,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "2c9e365e-629f-4613-98e0-e7e1d4024817"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1086,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Read": 9,
+        "Glob": 1,
+        "Edit": 1,
+        "Bash": 3
+      },
+      "files_inspected": [
+        "2",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.75,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.91,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.83,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 0.09,
+          "log_path": "graders/lint.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.27,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\2",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\2"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 2,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 66.36,
+      "usage": {
+        "total_cost_usd": 0.1137556,
+        "input_tokens": 107,
+        "output_tokens": 5213,
+        "cache_creation_input_tokens": 19637,
+        "cache_read_input_tokens": 470586,
+        "num_turns": 19,
+        "duration_ms": 64254,
+        "duration_api_ms": 51699,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 107,
+            "outputTokens": 5213,
+            "cacheReadInputTokens": 470586,
+            "cacheCreationInputTokens": 19637,
+            "webSearchRequests": 0,
+            "costUSD": 0.11250460000000001,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 2227,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "4bd84b50-8ad5-472c-b7a6-de55bf6123df"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1129,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Glob": 2,
+        "Read": 8,
+        "Edit": 2,
+        "Bash": 5
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_service.py"
+      ],
+      "hook_events": 4,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.76,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.83,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.86,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.09,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.5,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\2",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\2"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 3,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 52.33,
+      "usage": {
+        "total_cost_usd": 0.0878549,
+        "input_tokens": 81,
+        "output_tokens": 4050,
+        "cache_creation_input_tokens": 16154,
+        "cache_read_input_tokens": 339649,
+        "num_turns": 14,
+        "duration_ms": 50395,
+        "duration_api_ms": 41535,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 81,
+            "outputTokens": 4050,
+            "cacheReadInputTokens": 339649,
+            "cacheCreationInputTokens": 16154,
+            "webSearchRequests": 0,
+            "costUSD": 0.0866039,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 2162,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "92a1ef13-617f-4eb6-99d8-da1d6923eca3"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1012,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Read": 8,
+        "Glob": 3,
+        "Edit": 1,
+        "Bash": 1
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_service.py"
+      ],
+      "hook_events": 2,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.81,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.86,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.83,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.08,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.55,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\3",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\3"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 3,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 74.23,
+      "usage": {
+        "total_cost_usd": 0.09576789999999999,
+        "input_tokens": 73,
+        "output_tokens": 5520,
+        "cache_creation_input_tokens": 17817,
+        "cache_read_input_tokens": 312099,
+        "num_turns": 14,
+        "duration_ms": 72252,
+        "duration_api_ms": 66067,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 73,
+            "outputTokens": 5520,
+            "cacheReadInputTokens": 312099,
+            "cacheCreationInputTokens": 17817,
+            "webSearchRequests": 0,
+            "costUSD": 0.09451689999999999,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 3501,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "99b35473-ea51-4850-bd77-9a71e5166157"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1083,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Glob": 2,
+        "Read": 8,
+        "Edit": 1,
+        "Bash": 2
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.72,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.8,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.91,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.09,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.2,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\3",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\3"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 4,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 62.99,
+      "usage": {
+        "total_cost_usd": 0.0946196,
+        "input_tokens": 89,
+        "output_tokens": 3910,
+        "cache_creation_input_tokens": 17690,
+        "cache_read_input_tokens": 383496,
+        "num_turns": 17,
+        "duration_ms": 60874,
+        "duration_api_ms": 54432,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 89,
+            "outputTokens": 3910,
+            "cacheReadInputTokens": 383496,
+            "cacheCreationInputTokens": 17690,
+            "webSearchRequests": 0,
+            "costUSD": 0.0933686,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 1415,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "654fd2fa-ad35-4069-9fb4-02a514124050"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1164,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Bash": 5,
+        "Read": 10,
+        "Edit": 1
+      },
+      "files_inspected": [
+        "4",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_channels.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.7,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 0.95,
+          "log_path": "graders/heldout.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.89,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.11,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.17,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\4",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\4"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 4,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 83.33,
+      "usage": {
+        "total_cost_usd": 0.1178964,
+        "input_tokens": 73,
+        "output_tokens": 8564,
+        "cache_creation_input_tokens": 21265,
+        "cache_read_input_tokens": 312224,
+        "num_turns": 14,
+        "duration_ms": 81313,
+        "duration_api_ms": 71222,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 73,
+            "outputTokens": 8564,
+            "cacheReadInputTokens": 312224,
+            "cacheCreationInputTokens": 21265,
+            "webSearchRequests": 0,
+            "costUSD": 0.11664540000000002,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 6346,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "102cfb61-e819-4133-9f49-836491051b34"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1317,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Read": 10,
+        "Glob": 1,
+        "Edit": 1,
+        "Bash": 1
+      },
+      "files_inspected": [
+        "4",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 2,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.92,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 1.14,
+          "log_path": "graders/heldout.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.88,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.09,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.66,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\4",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\4"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 5,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 96.78,
+      "usage": {
+        "total_cost_usd": 0.1190945,
+        "input_tokens": 107,
+        "output_tokens": 6125,
+        "cache_creation_input_tokens": 19817,
+        "cache_read_input_tokens": 474775,
+        "num_turns": 18,
+        "duration_ms": 94495,
+        "duration_api_ms": 79577,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 107,
+            "outputTokens": 6125,
+            "cacheReadInputTokens": 474775,
+            "cacheCreationInputTokens": 19817,
+            "webSearchRequests": 0,
+            "costUSD": 0.1178435,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 3429,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "d64ed836-0d51-4e5c-bedb-7e7a68926a57"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1070,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Glob": 2,
+        "Read": 8,
+        "Edit": 2,
+        "Bash": 4
+      },
+      "files_inspected": [
+        "__init__.py",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py"
+      ],
+      "hook_events": 4,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.88,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 1.09,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.89,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.09,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.7,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\5",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\5"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 5,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 86.17,
+      "usage": {
+        "total_cost_usd": 0.09856650000000002,
+        "input_tokens": 65,
+        "output_tokens": 6389,
+        "cache_creation_input_tokens": 18886,
+        "cache_read_input_tokens": 275335,
+        "num_turns": 14,
+        "duration_ms": 83755,
+        "duration_api_ms": 76017,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 65,
+            "outputTokens": 6389,
+            "cacheReadInputTokens": 275335,
+            "cacheCreationInputTokens": 18886,
+            "webSearchRequests": 0,
+            "costUSD": 0.09731550000000001,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 4205,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "9efe7b84-5839-498d-af97-22c5a0843efe"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1139,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Glob": 1,
+        "Read": 9,
+        "Edit": 1,
+        "Bash": 2
+      },
+      "files_inspected": [
+        "5",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.88,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 1.22,
+          "log_path": "graders/heldout.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.89,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.11,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.55,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\5",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\5"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 6,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 58.88,
+      "usage": {
+        "total_cost_usd": 0.07951580000000001,
+        "input_tokens": 65,
+        "output_tokens": 3692,
+        "cache_creation_input_tokens": 16340,
+        "cache_read_input_tokens": 270598,
+        "num_turns": 14,
+        "duration_ms": 56615,
+        "duration_api_ms": 49999,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 65,
+            "outputTokens": 3692,
+            "cacheReadInputTokens": 270598,
+            "cacheCreationInputTokens": 16340,
+            "webSearchRequests": 0,
+            "costUSD": 0.07826480000000001,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 1688,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "8bd26027-26f5-4605-864e-4794f3f8b5bc"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1398,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Glob": 2,
+        "Read": 8,
+        "Edit": 1,
+        "Bash": 2
+      },
+      "files_inspected": [
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.98,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 1.39,
+          "log_path": "graders/heldout.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 1.06,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.12,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.73,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\6",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\6"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 6,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 77.05,
+      "usage": {
+        "total_cost_usd": 0.1078041,
+        "input_tokens": 115,
+        "output_tokens": 4100,
+        "cache_creation_input_tokens": 18114,
+        "cache_read_input_tokens": 497051,
+        "num_turns": 18,
+        "duration_ms": 74718,
+        "duration_api_ms": 58138,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 16,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001256,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 115,
+            "outputTokens": 4100,
+            "cacheReadInputTokens": 497051,
+            "cacheCreationInputTokens": 18114,
+            "webSearchRequests": 0,
+            "costUSD": 0.1065481,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 1655,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "2b827a54-32e3-48ed-8a17-62f971823bb4"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1372,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Glob": 2,
+        "Read": 8,
+        "Edit": 2,
+        "Bash": 4
+      },
+      "files_inspected": [
+        "acceptance",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py"
+      ],
+      "hook_events": 4,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.88,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 1.11,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.89,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.08,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.66,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\6",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\6"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "candidate",
+      "rep": 7,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 77.0,
+      "usage": {
+        "total_cost_usd": 0.1138219,
+        "input_tokens": 121,
+        "output_tokens": 4872,
+        "cache_creation_input_tokens": 18167,
+        "cache_read_input_tokens": 517559,
+        "num_turns": 15,
+        "duration_ms": 74547,
+        "duration_api_ms": 63939,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 121,
+            "outputTokens": 4872,
+            "cacheReadInputTokens": 517559,
+            "cacheCreationInputTokens": 18167,
+            "webSearchRequests": 0,
+            "costUSD": 0.1125709,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 2567,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "d75b0f78-6b1a-4ff0-8304-a309a0b9428b"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1100,
+      "tools_run": [
+        "mypy",
+        "pytest",
+        "ruff"
+      ],
+      "tool_calls": {
+        "Read": 11,
+        "Glob": 1,
+        "Edit": 1,
+        "Bash": 1
+      },
+      "files_inspected": [
+        "7",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_channels.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 2,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.94,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "fail",
+          "exit_code": 1,
+          "duration_s": 1.16,
+          "log_path": "graders/heldout.log",
+          "reason": "exit code 1"
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.86,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.09,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.7,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\candidate\\7",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\candidate\\7"
+    },
+    {
+      "task_id": "notify-fallback",
+      "harness": "baseline",
+      "rep": 7,
+      "status": "completed",
+      "exit_code": 0,
+      "wall_clock_s": 77.52,
+      "usage": {
+        "total_cost_usd": 0.09493669999999998,
+        "input_tokens": 57,
+        "output_tokens": 6234,
+        "cache_creation_input_tokens": 19247,
+        "cache_read_input_tokens": 239647,
+        "num_turns": 14,
+        "duration_ms": 75211,
+        "duration_api_ms": 67484,
+        "model_usage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 1176,
+            "outputTokens": 15,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.001251,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-haiku-4-5": {
+            "inputTokens": 57,
+            "outputTokens": 6234,
+            "cacheReadInputTokens": 239647,
+            "cacheCreationInputTokens": 19247,
+            "webSearchRequests": 0,
+            "costUSD": 0.09368569999999998,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 3986,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "is_error": false,
+        "subtype": "success",
+        "session_id": "1eee0e7f-a802-463a-9584-32a0caf8b789"
+      },
+      "files_changed": [
+        "src/notifier/service.py"
+      ],
+      "patch_bytes": 1199,
+      "tools_run": [
+        "pytest"
+      ],
+      "tool_calls": {
+        "Glob": 1,
+        "Read": 8,
+        "Edit": 1,
+        "Bash": 3
+      },
+      "files_inspected": [
+        "7",
+        "channels.py",
+        "errors.py",
+        "logging_utils.py",
+        "retry.py",
+        "service.py",
+        "test_notify.py",
+        "test_retry.py",
+        "test_service.py"
+      ],
+      "hook_events": 0,
+      "tests_modified": [],
+      "graders": [
+        {
+          "id": "acceptance",
+          "dimension": "correctness",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.89,
+          "log_path": "graders/acceptance.log",
+          "reason": null
+        },
+        {
+          "id": "heldout",
+          "dimension": "fidelity",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 1.19,
+          "log_path": "graders/heldout.log",
+          "reason": null
+        },
+        {
+          "id": "regressions",
+          "dimension": "regression",
+          "critical": true,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.89,
+          "log_path": "graders/regressions.log",
+          "reason": null
+        },
+        {
+          "id": "lint",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 0.12,
+          "log_path": "graders/lint.log",
+          "reason": null
+        },
+        {
+          "id": "types",
+          "dimension": "conventions",
+          "critical": false,
+          "status": "pass",
+          "exit_code": 0,
+          "duration_s": 2.58,
+          "log_path": "graders/types.log",
+          "reason": null
+        }
+      ],
+      "error": null,
+      "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\7",
+      "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\7"
+    }
+  ],
+  "wall_clock_s": 1217.0
+}

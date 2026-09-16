@@ -1,0 +1,35 @@
+id: calculate-total
+
+prompt: |
+  Add `calculate_total(items)` to the billing module.
+
+  The function should calculate the total amount for a collection of line items.
+
+  Requirements:
+
+    - Sum the line-item amounts.
+    - Amounts may be positive or negative.
+    - An empty collection should return 0.
+    - A line with a missing or invalid amount should raise ValueError.
+    - Apply the repository's existing money-rounding rule instead of creating a new
+      rounding implementation.
+    - Preserve the repository's existing conventions and APIs.
+    - Update the relevant user-facing documentation if the new function is
+      exposed/documented by the repository.
+    - Keep the implementation correctly typed.
+
+  Tests covering the basic API are in tests/acceptance/. Do not edit them.
+
+acceptance_tests: examples/tasks/calculate-total/acceptance
+heldout_tests: examples/heldout/calculate-total
+
+notes: |
+  Designed for the AGENTS.md verification-loop experiment.
+
+  The acceptance suite establishes the API and the happy path only. Every held-out test
+  maps to a requirement stated verbatim in the ticket: negatives, empty input, missing
+  amount, non-numeric amount, the exception TYPE, reuse of round_money, a half-way
+  boundary, and the docs/api.md entry the repository's own convention requires.
+
+  The ticket names no type annotation, helper, data structure or algorithm, so any
+  mypy --strict failure is one the agent introduced and the AGENTS.md did not predict.

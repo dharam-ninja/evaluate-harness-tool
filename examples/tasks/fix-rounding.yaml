@@ -1,0 +1,40 @@
+id: fix-rounding
+
+# The instruction handed to the agent, verbatim. Written as a ticket: it states the
+# required behaviour in full and names no implementation.
+prompt: |
+  Finance has opened a ticket against the billing module.
+
+  Invoice totals occasionally disagree with what the customer was shown at checkout,
+  and every case they have traced ends at `round_money` in src/demo/money.py.
+
+  The agreed rule for every monetary amount is:
+
+    - reduce the amount to 2 decimal places
+    - when an amount sits exactly halfway between two cents, settle it in the
+      customer's favour by moving it away from zero
+    - credits (negative amounts) follow the same rule as charges
+
+  Make `round_money` implement that rule.
+
+  Tests covering the ticket are in tests/acceptance/. Do not edit them, and do not
+  change the signature of `round_money` -- other modules call it.
+
+# Tests the agent CAN see. Copied into the workspace BEFORE the run.
+acceptance_tests: examples/tasks/fix-rounding/acceptance
+
+# Tests the agent NEVER sees. Overlaid onto the finished workspace AFTER the run.
+heldout_tests: examples/heldout/fix-rounding
+
+# Why this task exists / which dimension it loads. See PLAN.md section 6.
+notes: |
+  Loads the FIDELITY dimension.
+
+  The ticket states the rule completely, including the half-way case and negatives.
+  The acceptance suite does not enforce either. An agent that reaches for the
+  obvious `round(amount, 2)` turns acceptance green and is still wrong against the
+  stated rule -- which is precisely the "passing tests are not proof of correct
+  behaviour" failure mode the tool exists to detect.
+
+  The trap is fair: the information the agent needs is in the prompt. Only the
+  tests are incomplete, which is the realistic case.

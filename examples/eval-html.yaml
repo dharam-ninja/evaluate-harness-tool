@@ -1,0 +1,65 @@
+# Harness 1 vs Harness 2 on the SAME local model.
+#
+# The model endpoint is not written here. Set it before running:
+#
+#   LOCAL_MODEL_URL   OpenAI-compatible base URL   (default: http://localhost:11434/v1)
+#   LOCAL_MODEL       model id to request          (default: smollm2:360m)
+#
+# Both arms reference the same two variables, so they cannot diverge on the model: there
+# is one value, used twice. The only intentional difference is AGENTS.md.
+
+repo: examples/demo-html
+
+change: >-
+  Harness 2 receives a general-engineering AGENTS.md (DRY, simple and readable, semantic
+  HTML5, accessibility in forms, preserve existing conventions, validate and fix before
+  finishing). It contains no reference implementation and names none of the held-out
+  checks. Harness 1 receives the same task, repository and model with no AGENTS.md.
+
+intended_difference:
+  - instructions
+
+# One command for both arms. Claude Code refuses unrecognised model ids, so the local
+# model is driven by a small runner instead; ShellAgentAdapter runs any command, so the
+# evaluator itself is unchanged.
+x-command: &cmd >-
+  python -m harness_eval.local_agent
+  --endpoint ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+  --model {model}
+  --target index.html
+  --max-rounds 2
+
+harnesses:
+  baseline:
+    description: Harness 1 - ${LOCAL_MODEL:-smollm2:360m} (local), no AGENTS.md
+    command: *cmd
+    model: ${LOCAL_MODEL:-smollm2:360m}
+    endpoint: ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+    budget: 0.00
+    instructions: null
+  candidate:
+    description: Harness 2 - ${LOCAL_MODEL:-smollm2:360m} (local), with AGENTS.md
+    command: *cmd
+    model: ${LOCAL_MODEL:-smollm2:360m}
+    endpoint: ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+    budget: 0.00
+    instructions: examples/harnesses/candidate-html/AGENTS.md
+
+reps: 8
+timeout_s: 900
+jobs: 1
+
+tasks:
+  - html-contact
+
+dimensions:
+  - correctness
+  - fidelity
+  - regression
+  - conventions
+
+graders:
+  - {id: acceptance,  command: "pytest -q tests/acceptance", critical: true,  dimension: correctness}
+  - {id: heldout,     command: "pytest -q tests/heldout",    critical: true,  dimension: fidelity, overlay: heldout}
+  - {id: regressions, command: "pytest -q tests/regression", critical: true,  dimension: regression}
+  - {id: validator,   command: "python validate.py",         critical: false, dimension: conventions}

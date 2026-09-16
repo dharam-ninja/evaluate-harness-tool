@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 63939,
+  "stop_reason": "end_turn",
+  "session_id": "d75b0f78-6b1a-4ff0-8304-a309a0b9428b",
+  "total_cost_usd": 0.1138219,
+  "usage": {
+    "input_tokens": 121,
+    "cache_creation_input_tokens": 18167,
+    "cache_read_input_tokens": 517559,
+    "output_tokens": 4872,
+    "output_tokens_details": {
+      "thinking_tokens": 2567
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 18167,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 747,
+        "cache_read_input_tokens": 40872,
+        "cache_creation_input_tokens": 528,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 528
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001251,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 121,
+      "outputTokens": 4872,
+      "cacheReadInputTokens": 517559,
+      "cacheCreationInputTokens": 18167,
+      "webSearchRequests": 0,
+      "costUSD": 0.1125709,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 2567,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 15,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Perfect! All tests pass. Here's a summary of the implementation:\n\n## Solution Summary\n\nI've added retry and fallback behavior to `send_notification` in `src/notifier/service.py`:\n\n**Key changes:**\n1. **Retry email delivery**: Uses the existing `call_with_retry` helper to automatically retry email delivery up to 3 times for transient failures\n2. **Smart retry logic**: Only retries `TransientDeliveryError` (retryable); `PermanentDeliveryError` propagates immediately without retry\n3. **SMS fallback**: When email fails with a transient error after all attempts, falls back to SMS with the same retry logic\n4. **No fallback without phone**: If the recipient has no phone number, the original email error propagates\n5. **Error propagation**: If SMS also fails, the SMS error is raised unchanged (not wrapped)\n6. **Logging**: Follows existing conventions, logging the fallback attempt\n\n**How it works:**\n- Email attempt with retries (3 attempts max)\n- If email succeeds \u2192 return email receipt \u2713\n- If email fails with transient error \u2192 try SMS with retries (3 attempts max)\n- If SMS succeeds \u2192 return SMS receipt \u2713  \n- If either channel fails with permanent error \u2192 fail immediately, no retry\n- If no phone available \u2192 fail with the email error\n\nAll 15 tests pass, including the acceptance tests that verify the basic flow and fallback behavior.",
+  "ttft_ms": 4641,
+  "type": "result",
+  "duration_ms": 74547,
+  "uuid": "ba150ee5-dbad-4377-9052-4c146f4f609b",
+  "ttft_stream_ms": 1854,
+  "time_to_request_ms": 537,
+  "first_content_frame_ms": 1854,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

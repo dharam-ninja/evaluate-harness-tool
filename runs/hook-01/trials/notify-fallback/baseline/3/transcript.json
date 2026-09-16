@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 66067,
+  "stop_reason": "end_turn",
+  "session_id": "99b35473-ea51-4850-bd77-9a71e5166157",
+  "total_cost_usd": 0.09576789999999999,
+  "usage": {
+    "input_tokens": 73,
+    "cache_creation_input_tokens": 17817,
+    "cache_read_input_tokens": 312099,
+    "output_tokens": 5520,
+    "output_tokens_details": {
+      "thinking_tokens": 3501
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 17817,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 759,
+        "cache_read_input_tokens": 40523,
+        "cache_creation_input_tokens": 527,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 527
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001251,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 73,
+      "outputTokens": 5520,
+      "cacheReadInputTokens": 312099,
+      "cacheCreationInputTokens": 17817,
+      "webSearchRequests": 0,
+      "costUSD": 0.09451689999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 3501,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Excellent! The implementation is complete and all tests pass. Here's what I did:\n\n## Summary\n\nUpdated `send_notification` in `src/notifier/service.py` to add retry and fallback behavior:\n\n**Key features implemented:**\n1. **Retry logic**: Uses `call_with_retry()` (which already exists) to retry email delivery with at most 3 attempts\n2. **Smart retry policy**: Only retries transient failures (`TransientDeliveryError`); permanent failures propagate immediately\n3. **SMS fallback**: If email fails after retries, falls back to SMS if a phone number exists\n4. **Same retry rules for SMS**: SMS delivery also uses `call_with_retry()` for consistency\n5. **Proper error handling**: \n   - If no phone available, re-raises the email error\n   - If SMS fails, lets the SMS exception propagate unchanged (not wrapped)\n6. **Logging**: Follows the package convention with `get_logger(__name__)`, logging the fallback attempt\n7. **Backward compatible**: Function signature and return value unchanged\n\n**All tests pass:**\n- \u2705 2 acceptance tests (email success, email failure \u2192 SMS fallback)\n- \u2705 13 regression tests (API compatibility, error hierarchy, signatures)",
+  "ttft_ms": 3861,
+  "type": "result",
+  "duration_ms": 72252,
+  "uuid": "aa6e63d3-e343-469c-8785-d97ada8eccad",
+  "ttft_stream_ms": 2080,
+  "time_to_request_ms": 469,
+  "first_content_frame_ms": 2080,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

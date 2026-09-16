@@ -1,0 +1,16 @@
+grader   : acceptance
+dimension: correctness  critical=True
+command  : pytest -q tests/acceptance
+overlay  : -
+status   : pass
+exit code: 0
+duration : 0.81s
+reason   : -
+
+--- stdout (tail) ---
+..                                                                       [100%]
+2 passed in 0.07s
+
+
+--- stderr (tail) ---
+

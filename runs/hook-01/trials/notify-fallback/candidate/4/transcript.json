@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 71222,
+  "stop_reason": "end_turn",
+  "session_id": "102cfb61-e819-4133-9f49-836491051b34",
+  "total_cost_usd": 0.1178964,
+  "usage": {
+    "input_tokens": 73,
+    "cache_creation_input_tokens": 21265,
+    "cache_read_input_tokens": 312224,
+    "output_tokens": 8564,
+    "output_tokens_details": {
+      "thinking_tokens": 6346
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 21265,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 705,
+        "cache_read_input_tokens": 43609,
+        "cache_creation_input_tokens": 889,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 889
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001251,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 73,
+      "outputTokens": 8564,
+      "cacheReadInputTokens": 312224,
+      "cacheCreationInputTokens": 21265,
+      "webSearchRequests": 0,
+      "costUSD": 0.11664540000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 6346,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Excellent! The implementation is complete and all tests pass. Here's what I've done:\n\n**Changes made to `src/notifier/service.py`:**\n\n1. **Added imports** for retry logic, SMS channel, and error types\n2. **Wrapped email sending with `call_with_retry`** \u2014 makes up to 3 attempts with 0.01s delays between attempts\n3. **Added fallback to SMS** when email delivery fails with `TransientDeliveryError`:\n   - Checks if recipient has a phone number\n   - If no phone, re-raises the original email error\n   - If phone exists, logs the fallback and tries SMS with the same retry logic\n4. **SMS exception propagates directly** \u2014 if SMS fails after retries, the SMS exception goes to the caller unchanged\n5. **Preserved function signature and behavior** \u2014 `send_notification(recipient, message)` returns a receipt ID as before\n\n**How it works:**\n- Only transient failures (network timeouts, provider temporarily down) are retried\n- Permanent failures (invalid email format) fail immediately without wasting retries\n- If email provider has issues, SMS provides a reliable fallback notification path\n- Logging follows the existing package conventions using `_log.info`\n\nAll 15 tests pass, including the two acceptance tests that verify the core behavior.",
+  "ttft_ms": 4394,
+  "type": "result",
+  "duration_ms": 81313,
+  "uuid": "5f97bf1c-d20e-4f87-9389-3be629e46505",
+  "ttft_stream_ms": 3000,
+  "time_to_request_ms": 442,
+  "first_content_frame_ms": 3000,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

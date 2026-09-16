@@ -1,0 +1,119 @@
+{
+  "duration_api_ms": 45043,
+  "stop_reason": "end_turn",
+  "session_id": "df4f74c8-c6d3-4f30-b33c-97a8d17a5d7e",
+  "total_cost_usd": 0.0858012,
+  "usage": {
+    "input_tokens": 81,
+    "cache_creation_input_tokens": 16508,
+    "cache_read_input_tokens": 337532,
+    "output_tokens": 3540,
+    "output_tokens_details": {
+      "thinking_tokens": 1452
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 16508,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 646,
+        "cache_read_input_tokens": 38908,
+        "cache_creation_input_tokens": 833,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 833
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001251,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 81,
+      "outputTokens": 3540,
+      "cacheReadInputTokens": 337532,
+      "cacheCreationInputTokens": 16508,
+      "webSearchRequests": 0,
+      "costUSD": 0.08455019999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 1452,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01YZBVJcaotVhrUuNRiYR7yX",
+      "tool_input": {
+        "command": "Get-ChildItem -Path \"src\\notifier\" -Recurse -File | Select-Object -ExpandProperty FullName"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 16,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Perfect! All 15 tests pass. Let me verify the implementation covers all the requirements:\n\n**Implementation summary:**\n\nThe updated `send_notification` function now:\n\n1. **Retries email delivery** \u2014 uses `call_with_retry()` to make up to 3 attempts total, with waits between attempts but not after the final one\n2. **Only retries transient failures** \u2014 `call_with_retry()` only catches `TransientDeliveryError`; `PermanentDeliveryError` propagates immediately without retry\n3. **Falls back to SMS** \u2014 if email exhausts all attempts and fails with `TransientDeliveryError`, it attempts SMS (if a phone number exists)\n4. **SMS uses same retry rules** \u2014 also wrapped in `call_with_retry()` for up to 3 attempts\n5. **Handles missing phone gracefully** \u2014 if no phone exists, re-raises the email error\n6. **Preserves exception context** \u2014 if SMS fails, its exception is raised directly (not wrapped)\n7. **Follows logging conventions** \u2014 uses `get_logger(__name__)` and logs at info level before attempts, with additional context logging before SMS fallback\n8. **Maintains API contract** \u2014 function signature and return value unchanged\n\nThe implementation leverages existing infrastructure: the `call_with_retry()` helper already handles all the retry logic, waiting, and exception filtering\u2014I just needed to wire the channels together with fallback behavior.",
+  "ttft_ms": 3835,
+  "type": "result",
+  "duration_ms": 50589,
+  "uuid": "3e641fd8-af68-43c5-961c-1ebf054a1eec",
+  "ttft_stream_ms": 1532,
+  "time_to_request_ms": 515,
+  "first_content_frame_ms": 1532,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

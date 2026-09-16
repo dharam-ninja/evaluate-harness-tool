@@ -1,0 +1,63 @@
+# Notification retry/fallback experiment.
+#
+# Question: does a project-specific guidance resource help an agent on a task that
+# requires understanding an unfamiliar package rather than pattern-matching a solution?
+#
+# The two arms share one command template via a YAML anchor, so they cannot drift on
+# model, effort, permissions, budget or output format. The only intentional difference
+# is `instructions`.
+
+repo: examples/demo-notify
+
+change: >-
+  Added a high-process but GENERIC AGENTS.md: a nine-step engineering workflow -- read
+  before editing, turn the ticket into observable checks, look for existing helpers
+  before writing new code, test-first where it helps, smallest sufficient change, run
+  pytest + ruff + mypy --strict and fix causes rather than symptoms, read your own diff,
+  check the documentation, re-verify after any late change. It names no file, no symbol
+  and no helper in this repository, and contains no code.
+
+# stream-json (not plain json) so every tool call the agent makes is recorded. That is
+# what makes "did it actually inspect the package" answerable instead of inferred.
+x-command: &cmd >-
+  claude -p --output-format stream-json --verbose --model {model}
+  --permission-mode acceptEdits --permission-prompts none
+  --allowedTools "Bash(cd *)" "Bash(python *)" "Bash(ruff *)" "Bash(mypy *)"
+  "Bash(PYTHONPATH=* *)" "Bash(*python -m pytest*)"
+  Read Edit Write Glob Grep
+  --no-session-persistence --setting-sources project
+  --max-budget-usd {budget}
+
+harnesses:
+  baseline:
+    description: Claude Code (claude-sonnet-5), task + repository only
+    command: *cmd
+    model: claude-sonnet-5
+    budget: 2.00
+    instructions: null
+  candidate:
+    description: Claude Code (claude-sonnet-5) + examples/harnesses/candidate-process/AGENTS.md
+    command: *cmd
+    model: claude-sonnet-5
+    budget: 2.00
+    instructions: examples/harnesses/candidate-process/AGENTS.md
+
+reps: 8
+timeout_s: 900
+jobs: 1
+
+tasks:
+  - notify-fallback
+
+dimensions:
+  - correctness      # "the code works"
+  - fidelity         # "it does what the business asked"
+  - regression       # nothing else broke
+  - conventions      # "it follows the team's conventions"
+
+graders:
+  - {id: acceptance,  command: "pytest -q tests/acceptance", critical: true,  dimension: correctness}
+  - {id: heldout,     command: "pytest -q tests/heldout",    critical: true,  dimension: fidelity, overlay: heldout}
+  - {id: regressions, command: "pytest -q tests/regression", critical: true,  dimension: regression}
+  - {id: lint,        command: "ruff check .",               critical: false, dimension: conventions}
+  - {id: types,       command: "mypy src",                   critical: false, dimension: conventions}

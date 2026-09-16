@@ -1,0 +1,89 @@
+# Experiment definition. Adding a task, grader, or harness must not require
+# any change to the evaluator code. See PLAN.md §4.
+
+repo: examples/demo-repo
+
+# One line describing the change under test. Appears at the top of the report so a
+# reader knows what was compared without opening the config.
+change: >-
+  AGENTS.md v3 (process-only verification loop) under --effort low on BOTH arms.
+  v3: a mandatory verification loop. The agent must run pytest, ruff and mypy,
+  fix the cause of any failure rather than silencing it, re-run until green, then review
+  the implementation against the ticket for boundaries, error cases and negative values
+  before declaring the task done. v1 listed the same checks as advice; v2 makes passing
+  them the definition of done.
+
+# Command template verified live against Claude Code 2.1.272 (NOTES.md T+0:30).
+# Every flag below is load-bearing:
+#   --permission-mode acceptEdits  agent cannot edit files without it; trials would hang
+#   --permission-prompts none      deny-instead-of-hang; denials surface in permission_denials
+#   --allowedTools ...             lets the agent RUN the tests it was asked to satisfy,
+#                                  without granting a general shell. Without this the
+#                                  candidate's "verify before finishing" instruction is
+#                                  physically unfollowable and would measure as no signal
+#                                  (NOTES.md T+1:40, finding 3)
+#   --no-session-persistence       no rollout files leaking between trials
+#   --setting-sources project      operator's own user settings must not reach either arm
+#   --effort low                   lowers the agent's reasoning budget. Applied via the
+#                                  shared anchor, so BOTH arms get it identically -- the
+#                                  only difference between them stays AGENTS.md
+#   --model                        MUST be pinned. Unpinned inherits ambient config and
+#                                  measures the machine, not the harness (cost 0.092 -> 0.051)
+x-command: &cmd >-
+  claude -p "{prompt}" --output-format json --model {model}
+  --effort low
+  --permission-mode acceptEdits --permission-prompts none
+  --allowedTools "Bash(cd *)" "Bash(python *)" "Bash(ruff *)" "Bash(mypy *)"
+  "Bash(PYTHONPATH=* *)" "Bash(set *)" "Bash(*python -m pytest*)"
+  Read Edit Write Glob Grep
+  --no-session-persistence --setting-sources project
+  --max-budget-usd {budget}
+
+harnesses:
+  baseline:
+    description: Claude Code (claude-sonnet-5), no AGENTS.md
+    command: *cmd
+    model: claude-sonnet-5
+    budget: 2.00
+    instructions: null                                   # no AGENTS.md, this is the change under test
+  candidate:
+    description: Claude Code (claude-sonnet-5) + examples/harnesses/candidate/AGENTS.md
+    command: *cmd
+    model: claude-sonnet-5
+    budget: 2.00
+    instructions: examples/harnesses/candidate/AGENTS.md
+
+reps: 2
+timeout_s: 600
+jobs: 1        # >1 makes wall-clock unreliable; the report prints a banner saying so
+
+# Each task loads a different dimension; see the notes: block in each task file.
+tasks:
+  - calculate-total   # AGENTS.md verification-loop experiment
+  - fix-rounding      # fidelity      -- weak acceptance suite, held-out catches the gap
+  - add-retry         # correctness   -- adequate acceptance suite, control task
+  - refactor-config   # regression    -- touches code the pre-existing suite covers
+  - apply-discount    # fidelity      -- exact-to-the-cent acceptance suite, held-out checks the rounding rule
+  - group-line-items  # conventions   -- natural implementation trips mypy strict; only 'run the checks' catches it
+  - add-cli-flag      # conventions   -- repo conventions stated only in candidate AGENTS.md
+
+# The dimensions the report is allowed to have. Declared here rather than hardcoded in
+# Python so that adding a grader stays a YAML-only edit, while a typo'd dimension is
+# still rejected instead of silently creating a one-grader dimension in the report.
+# These map 1:1 onto the four quality claims in the assignment (PLAN.md section 2).
+dimensions:
+  - correctness      # "the code works"
+  - fidelity         # "it does what the business asked"
+  - regression       # nothing else broke
+  - conventions      # "it follows the team's conventions"
+
+# The regression grader runs ONLY the pre-existing suite. A bare `pytest -q` would
+# also pick up tests/acceptance and tests/heldout, so a task the agent simply failed
+# would register as a regression too -- collapsing three dimensions the tool exists
+# to keep apart. See NOTES.md T+0:50.
+graders:
+  - {id: acceptance,  command: "pytest -q tests/acceptance", critical: true,  dimension: correctness}
+  - {id: heldout,     command: "pytest -q tests/heldout",    critical: true,  dimension: fidelity, overlay: heldout}
+  - {id: regressions, command: "pytest -q tests/regression", critical: true,  dimension: regression}
+  - {id: lint,        command: "ruff check .",               critical: false, dimension: conventions}
+  - {id: types,       command: "mypy src",                   critical: false, dimension: conventions}

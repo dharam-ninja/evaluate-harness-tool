@@ -1,0 +1,64 @@
+# Does general AGENTS.md engineering guidance improve the same local model's output?
+#
+#   LOCAL_MODEL_URL   OpenAI-compatible base URL   (default: http://localhost:11434/v1)
+#   LOCAL_MODEL       model id                     (default: smollm2:360m)
+#
+# Both arms reference the same two variables, so there is one model value used twice.
+# The only intentional difference is AGENTS.md.
+
+repo: examples/demo-cleaner
+
+change: >-
+  Harness 2 receives a nine-point general engineering AGENTS.md (DRY, simple and readable,
+  preserve existing conventions, do not modify input data, add focused tests, small
+  targeted changes, run the tests, investigate failures, review the diff). It names no
+  method, no helper and none of the held-out checks.
+
+intended_difference:
+  - instructions
+
+x-command: &cmd >-
+  python -m harness_eval.local_agent
+  --endpoint ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+  --model {model}
+  --target src/cleaner/names.py
+  --test-target tests/agent/test_clean_names_agent.py
+  --verify "python -m pytest -q tests/acceptance"
+  --max-rounds 2
+
+harnesses:
+  baseline:
+    description: Harness 1 - ${LOCAL_MODEL:-smollm2:360m} (local), no AGENTS.md
+    command: *cmd
+    model: ${LOCAL_MODEL:-smollm2:360m}
+    endpoint: ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+    budget: 0.00
+    instructions: null
+  candidate:
+    description: Harness 2 - ${LOCAL_MODEL:-smollm2:360m} (local), with AGENTS.md
+    command: *cmd
+    model: ${LOCAL_MODEL:-smollm2:360m}
+    endpoint: ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+    budget: 0.00
+    instructions: examples/harnesses/candidate-cleaner/AGENTS.md
+
+reps: 8
+timeout_s: 900
+jobs: 1
+
+tasks:
+  - clean-names
+
+dimensions:
+  - correctness
+  - fidelity
+  - regression
+  - conventions
+
+graders:
+  - {id: acceptance,  command: "pytest -q tests/acceptance", critical: true,  dimension: correctness}
+  - {id: heldout,     command: "pytest -q tests/heldout",    critical: true,  dimension: fidelity, overlay: heldout}
+  - {id: regressions, command: "pytest -q tests/regression", critical: true,  dimension: regression}
+  - {id: lint,        command: "ruff check .",               critical: false, dimension: conventions}
+  - {id: types,       command: "mypy src",                   critical: false, dimension: conventions}
+  - {id: scope,       command: "python check_scope.py",      critical: false, dimension: conventions}

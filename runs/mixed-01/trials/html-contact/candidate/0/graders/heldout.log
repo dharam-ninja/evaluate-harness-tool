@@ -1,0 +1,16 @@
+grader   : heldout
+dimension: fidelity  critical=True
+command  : pytest -q tests/heldout
+overlay  : heldout
+status   : pass
+exit code: 0
+duration : 1.19s
+reason   : -
+
+--- stdout (tail) ---
+...............                                                          [100%]
+15 passed in 0.23s
+
+
+--- stderr (tail) ---
+

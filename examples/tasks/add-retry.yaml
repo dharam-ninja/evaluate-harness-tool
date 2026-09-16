@@ -1,0 +1,28 @@
+id: add-retry
+
+prompt: |
+  The payments team keeps seeing one-off failures against the upstream provider that
+  succeed immediately when retried by hand.
+
+  `call_with_retry` in src/demo/retry.py already takes the parameters for this but
+  currently just calls the operation once and returns. Make it behave as documented:
+
+    - call the operation, and if it raises one of the exception types in `retry_on`,
+      try again, up to `attempts` calls in total
+    - wait between attempts by calling `sleep(backoff_s)`; there is no wait after the
+      final attempt, and none at all if the first call succeeds
+    - exceptions not listed in `retry_on` are not retried
+    - when every attempt fails, the caller must see the exception the operation raised,
+      not a new one wrapping it
+
+  Tests covering the ticket are in tests/acceptance/. Do not edit them, and keep the
+  existing signature -- other modules call this.
+
+acceptance_tests: examples/tasks/add-retry/acceptance
+heldout_tests: examples/heldout/add-retry
+
+notes: |
+  Loads CORRECTNESS. Control task: the acceptance suite is adequate, covering success,
+  retry-then-succeed, the attempt limit, and non-retryable errors. Both arms should pass
+  it. The held-out tests cover the wait contract and exception identity, which the ticket
+  states and the acceptance suite does not check.

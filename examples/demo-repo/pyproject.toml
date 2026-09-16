@@ -1,0 +1,25 @@
+[project]
+name = "demo"
+version = "0.0.1"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+# src layout without an install step: each trial workspace is a fresh copy, and
+# `pip install -e .` per trial would add ~20s and a failure mode to every run.
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# The repo's conventions, machine-checked: docstrings (D) and complete type
+# annotations (ANN) on everything public, plus sorted imports (I).
+select = ["E", "F", "I", "D", "ANN"]
+ignore = ["D203", "D213", "ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D100", "D103", "ANN"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true

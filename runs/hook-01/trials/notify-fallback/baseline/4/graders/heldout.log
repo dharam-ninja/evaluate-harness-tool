@@ -1,0 +1,50 @@
+grader   : heldout
+dimension: fidelity  critical=True
+command  : pytest -q tests/heldout
+overlay  : heldout
+status   : fail
+exit code: 1
+duration : 0.95s
+reason   : exit code 1
+
+--- stdout (tail) ---
+...F.............                                                        [100%]
+================================== FAILURES ===================================
+________________ test_a_permanent_email_failure_is_not_retried ________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001FEFEF3D5D0>
+
+    def test_a_permanent_email_failure_is_not_retried(monkeypatch: pytest.MonkeyPatch) -> None:
+        email = _counting(PermanentDeliveryError("rejected"))
+        monkeypatch.setattr(channels, "email_transport", email)
+        monkeypatch.setattr(channels, "sms_transport", lambda n, m: "sms")
+>       send_notification(RECIPIENT, "hi")
+
+tests\heldout\test_notify_heldout.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\notifier\service.py:21: in send_notification
+    return call_with_retry(lambda: send_email(recipient["email"], message))
+src\notifier\retry.py:37: in call_with_retry
+    return operation()
+src\notifier\service.py:21: in <lambda>
+    return call_with_retry(lambda: send_email(recipient["email"], message))
+src\notifier\channels.py:34: in send_email
+    return email_transport(address, message)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+target = 'a@b.com', message = 'hi'
+
+    def transport(target: str, message: str) -> str:
+        calls["n"] += 1
+        if exc is not None:
+>           raise exc
+E           notifier.errors.PermanentDeliveryError: rejected
+
+tests\heldout\test_notify_heldout.py:29: PermanentDeliveryError
+=========================== short test summary info ===========================
+FAILED tests/heldout/test_notify_heldout.py::test_a_permanent_email_failure_is_not_retried
+1 failed, 16 passed in 0.26s
+
+
+--- stderr (tail) ---
+

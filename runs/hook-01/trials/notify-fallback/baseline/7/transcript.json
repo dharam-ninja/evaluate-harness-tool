@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 67484,
+  "stop_reason": "end_turn",
+  "session_id": "1eee0e7f-a802-463a-9584-32a0caf8b789",
+  "total_cost_usd": 0.09493669999999998,
+  "usage": {
+    "input_tokens": 57,
+    "cache_creation_input_tokens": 19247,
+    "cache_read_input_tokens": 239647,
+    "output_tokens": 6234,
+    "output_tokens_details": {
+      "thinking_tokens": 3986
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 19247,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 635,
+        "cache_read_input_tokens": 41610,
+        "cache_creation_input_tokens": 870,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 870
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001251,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 57,
+      "outputTokens": 6234,
+      "cacheReadInputTokens": 239647,
+      "cacheCreationInputTokens": 19247,
+      "webSearchRequests": 0,
+      "costUSD": 0.09368569999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 3986,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Excellent! All 15 tests pass. Let me verify the implementation meets all requirements:\n\n**Implementation Summary:**\n\n\u2705 **Retry with exponential backoff**: Email delivery now retries up to 3 times using `call_with_retry()`\n\u2705 **Smart retry logic**: Only `TransientDeliveryError` is retried; `PermanentDeliveryError` fails immediately\n\u2705 **Wait between attempts**: Handled by `call_with_retry` \u2014 waits 0.01s between attempts but not after the final one\n\u2705 **SMS fallback**: If email exhausts its retry attempts, SMS is attempted as fallback\n\u2705 **Phone number validation**: If recipient has no phone number, the original email exception propagates unchanged\n\u2705 **Exception propagation**: If SMS fails, its exception is raised directly to the caller (not wrapped)\n\u2705 **Logging conventions**: Follows the package's logger pattern with appropriate info/warning levels\n\u2705 **API compatibility**: `send_notification(recipient, message)` signature and return value unchanged\n\u2705 **Tests pass**: All 15 tests including acceptance tests pass without modification\n\nThe implementation reuses the existing `call_with_retry()` helper which was already designed for exactly this pattern, making the code clean and maintainable.",
+  "ttft_ms": 3884,
+  "type": "result",
+  "duration_ms": 75211,
+  "uuid": "b7c15da9-ae02-48ab-8e2b-5a73bebbf28d",
+  "ttft_stream_ms": 1846,
+  "time_to_request_ms": 431,
+  "first_content_frame_ms": 1847,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

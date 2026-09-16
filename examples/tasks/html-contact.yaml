@@ -1,0 +1,19 @@
+id: html-contact
+
+prompt: |
+  Create an index.html contact page containing a page heading, name and email fields, a
+  message textarea, and a submit button. The page should use proper semantic HTML, be
+  accessible, valid HTML5, and preserve existing project conventions.
+
+acceptance_tests: examples/tasks/html-contact/acceptance
+heldout_tests: examples/heldout/html-contact
+
+notes: |
+  Sized for a small local model. The acceptance suite checks that the page exists, parses
+  and carries the five elements the ticket names. The held-out suite checks what the
+  ticket asks for in words but does not enumerate: the doctype, the lang attribute, the
+  viewport meta, a label for every control, semantic sectioning, unique ids, no duplicated
+  form structure, and the project's own conventions from CONVENTIONS.md.
+
+  Nothing held-out is undiscoverable: about.html demonstrates every convention, and
+  CONVENTIONS.md states them.

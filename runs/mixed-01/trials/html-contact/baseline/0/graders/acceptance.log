@@ -1,0 +1,66 @@
+grader   : acceptance
+dimension: correctness  critical=True
+command  : pytest -q tests/acceptance
+overlay  : -
+status   : fail
+exit code: 1
+duration : 1.03s
+reason   : exit code 1
+
+--- stdout (tail) ---
+...FFFF                                                                  [100%]
+================================== FAILURES ===================================
+_________________________ test_there_is_a_name_field __________________________
+
+parsed = <test_contact_page._Collect object at 0x00000132B60C2290>
+
+    def test_there_is_a_name_field(parsed: _Collect) -> None:
+>       assert any(t == "input" and "name" in (a.get("name", "") + a.get("id", "")).lower()
+                   for t, a in parsed.tags)
+E       assert False
+E        +  where False = any(<generator object test_there_is_a_name_field.<locals>.<genexpr> at 0x00000132B60373E0>)
+
+tests\acceptance\test_contact_page.py:43: AssertionError
+________________________ test_there_is_an_email_field _________________________
+
+parsed = <test_contact_page._Collect object at 0x00000132B60C2290>
+
+    def test_there_is_an_email_field(parsed: _Collect) -> None:
+>       assert any(t == "input" and ("email" in (a.get("name", "") + a.get("id", "")).lower()
+                                     or a.get("type") == "email")
+                   for t, a in parsed.tags)
+E       assert False
+E        +  where False = any(<generator object test_there_is_an_email_field.<locals>.<genexpr> at 0x00000132B7914EB0>)
+
+tests\acceptance\test_contact_page.py:48: AssertionError
+______________________ test_there_is_a_message_textarea _______________________
+
+parsed = <test_contact_page._Collect object at 0x00000132B60C2290>
+
+    def test_there_is_a_message_textarea(parsed: _Collect) -> None:
+>       assert any(t == "textarea" for t, _ in parsed.tags)
+E       assert False
+E        +  where False = any(<generator object test_there_is_a_message_textarea.<locals>.<genexpr> at 0x00000132B7915310>)
+
+tests\acceptance\test_contact_page.py:54: AssertionError
+________________________ test_there_is_a_submit_button ________________________
+
+parsed = <test_contact_page._Collect object at 0x00000132B60C2290>
+
+    def test_there_is_a_submit_button(parsed: _Collect) -> None:
+>       assert any(t == "button" or (t == "input" and a.get("type") == "submit")
+                   for t, a in parsed.tags)
+E       assert False
+E        +  where False = any(<generator object test_there_is_a_submit_button.<locals>.<genexpr> at 0x00000132B7915690>)
+
+tests\acceptance\test_contact_page.py:58: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/acceptance/test_contact_page.py::test_there_is_a_name_field - as...
+FAILED tests/acceptance/test_contact_page.py::test_there_is_an_email_field - ...
+FAILED tests/acceptance/test_contact_page.py::test_there_is_a_message_textarea
+FAILED tests/acceptance/test_contact_page.py::test_there_is_a_submit_button
+4 failed, 3 passed in 0.23s
+
+
+--- stderr (tail) ---
+

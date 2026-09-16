@@ -1,0 +1,7 @@
+:root { --ink: #222; --paper: #fdfcf7; }
+body { margin: 0; font-family: Georgia, serif; color: var(--ink); background: var(--paper); }
+header, main, footer { max-width: 42rem; margin: 0 auto; padding: 1rem; }
+nav ul { list-style: none; display: flex; gap: 1rem; padding: 0; }
+label { display: block; margin-top: 1rem; font-weight: bold; }
+input, textarea { width: 100%; padding: 0.5rem; font: inherit; }
+button { margin-top: 1rem; padding: 0.6rem 1.2rem; font: inherit; }

@@ -1,0 +1,35 @@
+diff --git a/src/notifier/service.py b/src/notifier/service.py
+index cb35629..3a90dd6 100644
+--- a/src/notifier/service.py
++++ b/src/notifier/service.py
+@@ -2,8 +2,10 @@
+ 
+ from __future__ import annotations
+ 
+-from notifier.channels import send_email
++from notifier.channels import send_email, send_sms
++from notifier.errors import TransientDeliveryError
+ from notifier.logging_utils import get_logger
++from notifier.retry import call_with_retry
+ 
+ _log = get_logger(__name__)
+ 
+@@ -12,6 +14,16 @@ def send_notification(recipient: dict[str, str], message: str) -> str:
+     """Deliver `message` to `recipient` and return the provider's receipt id.
+ 
+     `recipient` carries an "email" and may carry a "phone".
++    Retries email delivery, falling back to SMS if available.
+     """
+-    _log.info("notifying %s", recipient.get("email"))
+-    return send_email(recipient["email"], message)
++    email = recipient["email"]
++    _log.info("notifying %s", email)
++
++    try:
++        return call_with_retry(lambda: send_email(email, message))
++    except TransientDeliveryError:
++        phone = recipient.get("phone")
++        if not phone:
++            raise
++        _log.info("email delivery failed, trying sms to %s", phone)
++        return call_with_retry(lambda: send_sms(phone, message))

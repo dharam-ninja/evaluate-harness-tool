@@ -1,0 +1,18 @@
+grader   : validator
+dimension: conventions  critical=False
+command  : python validate.py
+overlay  : -
+status   : pass
+exit code: 0
+duration : 0.49s
+reason   : -
+
+--- stdout (tail) ---
+ok    about.html
+ok    index.html
+
+0 file(s) failed validation
+
+
+--- stderr (tail) ---
+

@@ -1,0 +1,111 @@
+{
+  "duration_api_ms": 54432,
+  "stop_reason": "end_turn",
+  "session_id": "654fd2fa-ad35-4069-9fb4-02a514124050",
+  "total_cost_usd": 0.0946196,
+  "usage": {
+    "input_tokens": 89,
+    "cache_creation_input_tokens": 17690,
+    "cache_read_input_tokens": 383496,
+    "output_tokens": 3910,
+    "output_tokens_details": {
+      "thinking_tokens": 1415
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 17690,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 8,
+        "output_tokens": 672,
+        "cache_read_input_tokens": 39989,
+        "cache_creation_input_tokens": 934,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 934
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1176,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001251,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-haiku-4-5": {
+      "inputTokens": 89,
+      "outputTokens": 3910,
+      "cacheReadInputTokens": 383496,
+      "cacheCreationInputTokens": 17690,
+      "webSearchRequests": 0,
+      "costUSD": 0.0933686,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 1415,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 17,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Perfect! All tests pass. Here's what I implemented:\n\n## Summary\n\nI added retry and fallback behavior to `send_notification()` by:\n\n1. **Retry logic for email**: Wrapped `send_email()` with `call_with_retry()` to attempt up to 3 times total with delays between attempts (but not after the final attempt)\n\n2. **Smart error handling**: Only `TransientDeliveryError` is retried; `PermanentDeliveryError` propagates immediately (permanent failures won't succeed on retry)\n\n3. **SMS fallback**: When email fails after all retries, the code falls back to SMS with the same retry behavior\n\n4. **Missing phone handling**: If the recipient has no phone number and email fails, an error is logged and the original email exception is re-raised\n\n5. **Direct exception propagation**: If SMS also fails, the SMS exception is raised directly without wrapping\n\n6. **Existing conventions**: \n   - Uses the existing `call_with_retry()` helper from `notifier.retry`\n   - Logs via `get_logger(__name__)` following package conventions\n   - Leverages the error hierarchy (`TransientDeliveryError` vs `PermanentDeliveryError`)\n   - Function signature and return type unchanged\n\nThe implementation passes all 15 tests including the two acceptance tests that verify the basic flow and fallback behavior.",
+  "ttft_ms": 4296,
+  "type": "result",
+  "duration_ms": 60874,
+  "uuid": "60ae5eb2-a087-4ddd-be33-417cc8130c7b",
+  "ttft_stream_ms": 2501,
+  "time_to_request_ms": 420,
+  "first_content_frame_ms": 2501,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

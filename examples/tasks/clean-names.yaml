@@ -1,0 +1,35 @@
+id: clean-names
+
+prompt: |
+  Implement a function `clean_names(names)` in the existing data-cleaning package.
+
+  Requirements:
+
+    - Accept a list of names.
+    - Remove leading and trailing whitespace from each name.
+    - Convert names to title case.
+    - Remove empty names.
+    - Preserve the original order.
+    - Do not modify the input list.
+    - Follow the existing project conventions.
+    - Add appropriate tests for the new behavior.
+    - Run the relevant tests before finishing.
+
+  Example:
+
+    Input:   ["  john doe ", "", "ALICE", " bob "]
+    Output:  ["John Doe", "Alice", "Bob"]
+
+  Tests covering the basic behaviour are in tests/acceptance/. Do not edit them.
+
+acceptance_tests: examples/tasks/clean-names/acceptance
+heldout_tests: examples/heldout/clean-names
+
+notes: |
+  Deliberately small: a 360M local model has to be able to solve it, or the experiment
+  measures a floor effect rather than the guidance.
+
+  The repository shows the conventions the ticket refers to without naming them:
+  `clean_emails` in emails.py is the same shape (list in, new list out, input untouched),
+  `text.py` holds the shared blank check, and CONVENTIONS.md states the rules. Held-out
+  checks observable behaviour only -- never that a particular method was called.

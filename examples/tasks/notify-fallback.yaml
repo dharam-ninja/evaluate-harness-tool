@@ -1,0 +1,37 @@
+id: notify-fallback
+
+prompt: |
+  `send_notification` in src/notifier/service.py sends an email and nothing else. When the
+  email provider has a bad minute, the notification is simply lost.
+
+  Add retry and fallback behaviour to `send_notification`:
+
+    - Retry a failed email delivery, making at most 3 attempts in total.
+    - Wait between attempts. Do not wait after the final attempt.
+    - Only failures that are worth retrying should be retried. A failure the provider
+      will never accept must not be retried at all.
+    - If email delivery still fails after its attempts, fall back to SMS using the
+      recipient's phone number, under the same retry rules.
+    - If the recipient has no phone number, there is nothing to fall back to.
+    - If SMS also fails, the caller must receive the exception the SMS channel raised,
+      not a new exception wrapping it.
+    - Follow this package's existing logging conventions.
+    - `send_notification(recipient, message)` keeps its signature and its return value:
+      other code calls it.
+
+  Before writing anything, read the package and work out how delivery, failures and
+  logging are already handled here. Some of what you need already exists.
+
+  Tests covering the basic flow are in tests/acceptance/. Do not edit them.
+
+acceptance_tests: examples/tasks/notify-fallback/acceptance
+heldout_tests: examples/heldout/notify-fallback
+
+notes: |
+  Moderately confusing on purpose. The repo already contains a working `call_with_retry`
+  in notifier/retry.py with exactly the required semantics, a two-class error hierarchy
+  where only TransientDeliveryError is retryable, and a `get_logger` convention. None of
+  those are named in the ticket -- the agent has to inspect the package to find them.
+
+  The ticket states every behaviour the held-out tests check. Nothing hidden is
+  undiscoverable.

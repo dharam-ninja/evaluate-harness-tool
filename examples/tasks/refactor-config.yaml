@@ -1,0 +1,29 @@
+id: refactor-config
+
+prompt: |
+  `load_settings` in src/demo/config.py has grown a branch per setting and is awkward to
+  extend. Operations also want to annotate settings files.
+
+  Two things:
+
+    1. Refactor the per-key branching into a single parse path, so adding a setting does
+       not mean adding another `elif`.
+    2. Support comments. A `#` begins a comment and the rest of the line is ignored,
+       wherever it appears. Blank lines are ignored. A line left with no `key=value`
+       after its comment is removed is simply skipped, but a setting whose value is
+       emptied by a comment is an error, as an empty value already is.
+
+  Everything the existing settings tests assert must keep working -- unknown keys still
+  raise, `precision` is still coerced to an int, `strict` still accepts the documented
+  boolean spellings, and DEFAULTS is never mutated.
+
+  Tests covering the ticket are in tests/acceptance/. Do not edit them.
+
+acceptance_tests: examples/tasks/refactor-config/acceptance
+heldout_tests: examples/heldout/refactor-config
+
+notes: |
+  Loads REGRESSION SAFETY. The refactor touches code the pre-existing suite covers in
+  eight places, so collateral damage is caught by `regressions` rather than by the task's
+  own tests. The held-out tests cover trailing and indented comments; the acceptance
+  suite only ever puts `#` at the start of a line, so `startswith("#")` passes it.

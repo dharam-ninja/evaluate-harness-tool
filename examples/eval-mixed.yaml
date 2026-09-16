@@ -1,0 +1,74 @@
+# Harness 1 (local model, no guidance) vs Harness 2 (Claude Sonnet, with guidance).
+#
+# READ THIS BEFORE READING THE RESULT.
+#
+# This comparison changes FOUR things at once, not one:
+#
+#   1. the model          smollm2:360m  vs  claude-sonnet-5
+#   2. the provider       localhost     vs  Anthropic
+#   3. the runner         a fixed 3-step script  vs  Claude Code's agentic loop
+#   4. the guidance       absent        vs  present
+#
+# Any difference in the results therefore cannot be attributed to any one of them.
+# All four are declared below so the manifest records the experiment honestly rather
+# than reporting a controlled comparison it is not. This is a PRODUCT comparison
+# ("which setup should we use"), not a controlled harness evaluation.
+
+repo: examples/demo-html
+
+change: >-
+  Harness 1 is a 360M local model with no AGENTS.md, driven by a fixed single-shot
+  runner. Harness 2 is Claude Sonnet with an AGENTS.md, driven by Claude Code's full
+  agentic loop. Model, provider, runner and guidance all differ.
+
+intended_difference:
+  - model
+  - endpoint
+  - command
+  - instructions
+
+harnesses:
+  baseline:
+    description: Harness 1 - smollm2:360m (local, Ollama), NO AGENTS.md, single-shot runner
+    command: >-
+      python -m harness_eval.local_agent
+      --endpoint ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+      --model {model}
+      --target index.html
+      --verify "python validate.py"
+      --max-rounds 2
+    model: ${LOCAL_MODEL:-smollm2:360m}
+    endpoint: ${LOCAL_MODEL_URL:-http://localhost:11434/v1}
+    budget: 0.00
+    instructions: null
+  candidate:
+    description: Harness 2 - claude-sonnet-5 (Anthropic), WITH AGENTS.md, Claude Code agentic loop
+    command: >-
+      claude -p --output-format stream-json --verbose --model {model}
+      --permission-mode acceptEdits --permission-prompts none
+      --allowedTools "Bash(cd *)" "Bash(python *)" Read Edit Write Glob Grep
+      --no-session-persistence --setting-sources project
+      --max-budget-usd {budget}
+    model: claude-sonnet-5
+    endpoint: null
+    budget: 2.00
+    instructions: examples/harnesses/candidate-html/AGENTS.md
+
+reps: 4
+timeout_s: 900
+jobs: 1
+
+tasks:
+  - html-contact
+
+dimensions:
+  - correctness
+  - fidelity
+  - regression
+  - conventions
+
+graders:
+  - {id: acceptance,  command: "pytest -q tests/acceptance", critical: true,  dimension: correctness}
+  - {id: heldout,     command: "pytest -q tests/heldout",    critical: true,  dimension: fidelity, overlay: heldout}
+  - {id: regressions, command: "pytest -q tests/regression", critical: true,  dimension: regression}
+  - {id: validator,   command: "python validate.py",         critical: false, dimension: conventions}

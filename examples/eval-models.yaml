@@ -1,0 +1,69 @@
+# Model comparison: Harness 1 on a self-hosted / third-party model, Harness 2 on Claude.
+#
+# The endpoint is NOT written in this file. Set it in the environment before running:
+#
+#   HARNESS1_MODEL_URL   base URL of the provider          (required)
+#   HARNESS1_MODEL       model id to request               (default: llama-3.3-70b-instruct)
+#   HARNESS1_API_KEY     token for that provider           (default: empty)
+#
+# A ${VAR} with no value and no default is a hard config error, so a half-configured run
+# fails immediately instead of quietly falling back to the default provider.
+
+repo: examples/demo-notify
+
+change: >-
+  Harness 1 runs against the model at ${HARNESS1_MODEL_URL}; Harness 2 runs against
+  Claude. Instructions, tools, permissions, budget and task are identical, so the model
+  is the only variable.
+
+# The model is the experiment here, so it is declared. Everything not listed must match,
+# and the run manifest records whether it did.
+intended_difference:
+  - model
+  - endpoint
+
+x-command: &cmd >-
+  claude -p --output-format stream-json --verbose --model {model}
+  --permission-mode acceptEdits --permission-prompts none
+  --allowedTools "Bash(cd *)" "Bash(python *)" "Bash(ruff *)" "Bash(mypy *)"
+  "Bash(PYTHONPATH=* *)" "Bash(*python -m pytest*)"
+  Read Edit Write Glob Grep
+  --no-session-persistence --setting-sources project
+  --max-budget-usd {budget}
+
+harnesses:
+  baseline:
+    description: Harness 1 - ${HARNESS1_MODEL:-llama-3.3-70b-instruct} via ${HARNESS1_MODEL_URL}
+    command: *cmd
+    model: ${HARNESS1_MODEL:-llama-3.3-70b-instruct}
+    endpoint: ${HARNESS1_MODEL_URL}
+    budget: 2.00
+    instructions: null
+    env:
+      ANTHROPIC_AUTH_TOKEN: ${HARNESS1_API_KEY:-}
+  candidate:
+    description: Harness 2 - Claude (claude-sonnet-5), CLI-configured provider
+    command: *cmd
+    model: claude-sonnet-5
+    budget: 2.00
+    instructions: null
+
+reps: 8
+timeout_s: 900
+jobs: 1
+
+tasks:
+  - notify-fallback
+
+dimensions:
+  - correctness
+  - fidelity
+  - regression
+  - conventions
+
+graders:
+  - {id: acceptance,  command: "pytest -q tests/acceptance", critical: true,  dimension: correctness}
+  - {id: heldout,     command: "pytest -q tests/heldout",    critical: true,  dimension: fidelity, overlay: heldout}
+  - {id: regressions, command: "pytest -q tests/regression", critical: true,  dimension: regression}
+  - {id: lint,        command: "ruff check .",               critical: false, dimension: conventions}
+  - {id: types,       command: "mypy src",                   critical: false, dimension: conventions}

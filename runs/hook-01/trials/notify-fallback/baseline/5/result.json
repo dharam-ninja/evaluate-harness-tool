@@ -1,0 +1,133 @@
+{
+  "task_id": "notify-fallback",
+  "harness": "baseline",
+  "rep": 5,
+  "status": "completed",
+  "exit_code": 0,
+  "wall_clock_s": 86.17,
+  "usage": {
+    "total_cost_usd": 0.09856650000000002,
+    "input_tokens": 65,
+    "output_tokens": 6389,
+    "cache_creation_input_tokens": 18886,
+    "cache_read_input_tokens": 275335,
+    "num_turns": 14,
+    "duration_ms": 83755,
+    "duration_api_ms": 76017,
+    "model_usage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1176,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001251,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-haiku-4-5": {
+        "inputTokens": 65,
+        "outputTokens": 6389,
+        "cacheReadInputTokens": 275335,
+        "cacheCreationInputTokens": 18886,
+        "webSearchRequests": 0,
+        "costUSD": 0.09731550000000001,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 4205,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "is_error": false,
+    "subtype": "success",
+    "session_id": "9efe7b84-5839-498d-af97-22c5a0843efe"
+  },
+  "files_changed": [
+    "src/notifier/service.py"
+  ],
+  "patch_bytes": 1139,
+  "tools_run": [
+    "pytest"
+  ],
+  "tool_calls": {
+    "Glob": 1,
+    "Read": 9,
+    "Edit": 1,
+    "Bash": 2
+  },
+  "files_inspected": [
+    "5",
+    "channels.py",
+    "errors.py",
+    "logging_utils.py",
+    "retry.py",
+    "service.py",
+    "test_notify.py",
+    "test_retry.py",
+    "test_service.py"
+  ],
+  "hook_events": 0,
+  "tests_modified": [],
+  "graders": [
+    {
+      "id": "acceptance",
+      "dimension": "correctness",
+      "critical": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 0.88,
+      "log_path": "graders/acceptance.log",
+      "reason": null
+    },
+    {
+      "id": "heldout",
+      "dimension": "fidelity",
+      "critical": true,
+      "status": "fail",
+      "exit_code": 1,
+      "duration_s": 1.22,
+      "log_path": "graders/heldout.log",
+      "reason": "exit code 1"
+    },
+    {
+      "id": "regressions",
+      "dimension": "regression",
+      "critical": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 0.89,
+      "log_path": "graders/regressions.log",
+      "reason": null
+    },
+    {
+      "id": "lint",
+      "dimension": "conventions",
+      "critical": false,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 0.11,
+      "log_path": "graders/lint.log",
+      "reason": null
+    },
+    {
+      "id": "types",
+      "dimension": "conventions",
+      "critical": false,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 2.55,
+      "log_path": "graders/types.log",
+      "reason": null
+    }
+  ],
+  "error": null,
+  "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\workspaces\\notify-fallback\\baseline\\5",
+  "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\hook-01\\trials\\notify-fallback\\baseline\\5"
+}

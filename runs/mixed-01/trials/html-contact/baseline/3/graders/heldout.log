@@ -1,0 +1,31 @@
+grader   : heldout
+dimension: fidelity  critical=True
+command  : pytest -q tests/heldout
+overlay  : heldout
+status   : fail
+exit code: 1
+duration : 1.22s
+reason   : exit code 1
+
+--- stdout (tail) ---
+.......F.......                                                          [100%]
+================================== FAILURES ===================================
+_______________________ test_the_form_is_a_form_element _______________________
+
+doc = <test_contact_heldout._Doc object at 0x0000015D19350A00>
+
+    def test_the_form_is_a_form_element(doc: _Doc) -> None:
+>       assert "form" in doc.names(), "the controls are not inside a <form>"
+E       AssertionError: the controls are not inside a <form>
+E       assert 'form' in ['html', 'head', 'meta', 'meta', 'title', 'link', ...]
+E        +  where ['html', 'head', 'meta', 'meta', 'title', 'link', ...] = names()
+E        +    where names = <test_contact_heldout._Doc object at 0x0000015D19350A00>.names
+
+tests\heldout\test_contact_heldout.py:107: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/heldout/test_contact_heldout.py::test_the_form_is_a_form_element
+1 failed, 14 passed in 0.36s
+
+
+--- stderr (tail) ---
+

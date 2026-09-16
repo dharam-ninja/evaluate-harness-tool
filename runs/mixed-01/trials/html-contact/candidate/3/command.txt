@@ -1,0 +1,1 @@
+claude -p --output-format stream-json --verbose --model claude-sonnet-5 --permission-mode acceptEdits --permission-prompts none --allowedTools "Bash(cd *)" "Bash(python *)" Read Edit Write Glob Grep --no-session-persistence --setting-sources project --max-budget-usd 2.0

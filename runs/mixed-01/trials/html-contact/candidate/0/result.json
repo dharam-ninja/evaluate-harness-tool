@@ -1,0 +1,121 @@
+{
+  "task_id": "html-contact",
+  "harness": "candidate",
+  "rep": 0,
+  "status": "completed",
+  "exit_code": 0,
+  "wall_clock_s": 44.5,
+  "usage": {
+    "total_cost_usd": 0.138514,
+    "input_tokens": 12,
+    "output_tokens": 1867,
+    "cache_creation_input_tokens": 16743,
+    "cache_read_input_tokens": 259260,
+    "num_turns": 12,
+    "duration_ms": 41866,
+    "duration_api_ms": 34621,
+    "model_usage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 941,
+        "outputTokens": 11,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.000996,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 12,
+        "outputTokens": 1867,
+        "cacheReadInputTokens": 259260,
+        "cacheCreationInputTokens": 16743,
+        "webSearchRequests": 0,
+        "costUSD": 0.137518,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 66,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "is_error": false,
+    "subtype": "success",
+    "session_id": "45c29953-2f17-4ed4-b33d-1664de17e56d"
+  },
+  "files_changed": [
+    "index.html"
+  ],
+  "patch_bytes": 1252,
+  "tools_run": [
+    "pytest"
+  ],
+  "tool_calls": {
+    "Glob": 1,
+    "Read": 7,
+    "Write": 1,
+    "Bash": 2
+  },
+  "files_inspected": [
+    "AGENTS.md",
+    "CONVENTIONS.md",
+    "about.html",
+    "styles.css",
+    "test_contact_page.py",
+    "test_existing_pages.py",
+    "validate.py"
+  ],
+  "hook_events": 0,
+  "tests_modified": [],
+  "graders": [
+    {
+      "id": "acceptance",
+      "dimension": "correctness",
+      "critical": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 0.95,
+      "log_path": "graders/acceptance.log",
+      "reason": null
+    },
+    {
+      "id": "heldout",
+      "dimension": "fidelity",
+      "critical": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 1.19,
+      "log_path": "graders/heldout.log",
+      "reason": null
+    },
+    {
+      "id": "regressions",
+      "dimension": "regression",
+      "critical": true,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 1.02,
+      "log_path": "graders/regressions.log",
+      "reason": null
+    },
+    {
+      "id": "validator",
+      "dimension": "conventions",
+      "critical": false,
+      "status": "pass",
+      "exit_code": 0,
+      "duration_s": 0.41,
+      "log_path": "graders/validator.log",
+      "reason": null
+    }
+  ],
+  "error": null,
+  "workspace": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\mixed-01\\workspaces\\html-contact\\candidate\\0",
+  "trial_dir": "C:\\Users\\HP\\Desktop\\Take-Home\\harness-eval\\runs\\mixed-01\\trials\\html-contact\\candidate\\0"
+}
