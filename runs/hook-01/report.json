@@ -2254,7 +2254,12 @@
       "Arm order was counterbalanced across tasks and reps, so each arm took the cold-cache first slot equally often.",
       "The evaluator blocked the baseline arm 2 time(s) against 0 for candidate. Blocked attempts cost turns, so part of this cost difference is the permission configuration, not the harness."
     ],
-    "impact_threshold_pct": 25.0
+    "impact_threshold_pct": 25.0,
+    "baseline_total_usd": 0.7218895000000001,
+    "candidate_total_usd": 0.9283349,
+    "baseline_trial_count": 8,
+    "candidate_trial_count": 8,
+    "not_comparable_reason": ""
   },
   "recommendation": "NEGATIVE",
   "confidence": "LOW",

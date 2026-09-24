@@ -959,7 +959,12 @@
       "4 successful trial(s) excluded by task pairing.",
       "Arm order was counterbalanced across tasks and reps, so each arm took the cold-cache first slot equally often."
     ],
-    "impact_threshold_pct": 25.0
+    "impact_threshold_pct": 25.0,
+    "baseline_total_usd": 0.0,
+    "candidate_total_usd": 0.5869888,
+    "baseline_trial_count": 4,
+    "candidate_trial_count": 4,
+    "not_comparable_reason": "html-contact: baseline passed 0 of 4 trial(s)"
   },
   "recommendation": "POSITIVE SIGNAL",
   "confidence": "MODERATE",

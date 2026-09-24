@@ -113,16 +113,17 @@ Candidate passed 4/4 trials
 
 Cost
 
-Baseline:
-n/a per trial
+What the run cost:
+Baseline  $0.0000 over 4 trial(s)
+Candidate $0.5870 over 4 trial(s)
 
-Candidate:
-n/a per trial
+Per successful trial:
+NOT COMPARABLE
 
-Change:
-n/a cost, n/a tokens, n/a wall-clock
-
-NOT MEASURED
+html-contact: baseline passed 0 of 4 trial(s). An average per success needs at least one success
+in each arm, so no per-trial figure or delta is reported. The totals above are what
+the run spent, not a verdict: an arm can be cheaper because it failed faster, or
+because it is a local model with no per-token price.
 
 Evidence:
 

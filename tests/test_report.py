@@ -144,10 +144,26 @@ def test_report_json_carries_the_inputs_needed_to_recompute_the_verdict(rendered
 
 
 def test_cost_figures_never_appear_without_their_qualifier(rendered: Path) -> None:
-    """The number and the reason it needs qualifying must travel together."""
+    """The number and the reason it needs qualifying must travel together.
+
+    Every dollar figure is qualified where it is printed, not only in a caveat further
+    down: a mean says "per successful trial", a total says it covers all trials. The
+    section takes one of two shapes -- a valid comparison, or a withheld one -- and both
+    must carry their qualifier.
+    """
     body = (rendered / "report.md").read_text(encoding="utf-8")
     cost_section = body.split("\nCost\n")[1].split("=" * 32)[0]
-    assert "per trial" in cost_section
+
+    comparable = "per successful trial" in cost_section
+    withheld = "NOT COMPARABLE" in cost_section
+    assert comparable != withheld, "the section must be exactly one of the two shapes"
+
+    if comparable:
+        # A raw total printed beside a mean is the easiest figure in the report to misread.
+        assert "all trials, successful or not" in cost_section
+    else:
+        assert "passed 0 of" in cost_section  # the withheld case must say why
+
     assert "Successful trials only" in cost_section
     assert "Paired by task" in cost_section
 

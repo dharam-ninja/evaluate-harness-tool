@@ -255,6 +255,53 @@ def test_cost_is_paired_by_task() -> None:
     assert any("Paired by task" in c for c in summary.caveats)
 
 
+def test_raw_spend_is_reported_even_when_nothing_is_comparable() -> None:
+    """mixed-01's shape: one arm passes nothing, so the paired comparison is withheld.
+
+    Every compared figure correctly reads n/a, which on its own is indistinguishable from
+    "the tool failed to capture cost". The raw totals say what the run actually cost.
+    """
+    trials = [
+        _trial(harness="baseline", rep=0, critical_pass=False, cost=0.0),
+        _trial(harness="baseline", rep=1, critical_pass=False, cost=0.0),
+        _trial(harness="candidate", rep=0, critical_pass=True, cost=0.30),
+        _trial(harness="candidate", rep=1, critical_pass=True, cost=0.20),
+    ]
+    summary = cost_summary(compare(trials, ["t1"]))
+
+    assert summary.baseline_usd is None and summary.candidate_usd is None
+    assert summary.trials_counted == 0
+    assert summary.baseline_total_usd == 0.0
+    assert summary.candidate_total_usd == 0.50
+    assert summary.baseline_trial_count == 2
+    assert summary.candidate_trial_count == 2
+    assert "baseline passed 0 of 2" in summary.not_comparable_reason
+
+
+def test_raw_spend_counts_failed_trials_that_the_comparison_drops() -> None:
+    """The two numbers answer different questions and must not agree by accident."""
+    trials = [
+        _trial(harness="baseline", rep=0, critical_pass=True, cost=1.00),
+        _trial(harness="candidate", rep=0, critical_pass=True, cost=0.90),
+        _trial(harness="candidate", rep=1, critical_pass=False, cost=0.01),
+    ]
+    summary = cost_summary(compare(trials, ["t1"]))
+    assert summary.candidate_usd == 0.90            # mean over successes only
+    assert summary.candidate_total_usd == 0.91      # every trial, failure included
+    assert not summary.not_comparable_reason        # the comparison still stands
+
+
+def test_no_reason_is_given_when_the_comparison_succeeded() -> None:
+    """The explanation appears only where it explains something."""
+    trials = [
+        _trial(harness="baseline", cost=1.0),
+        _trial(harness="candidate", cost=2.0),
+    ]
+    summary = cost_summary(compare(trials, ["t1"]))
+    assert summary.not_comparable_reason == ""
+    assert summary.baseline_total_usd == 1.0
+
+
 def test_cost_caveats_always_mention_the_cache_mechanism() -> None:
     summary = cost_summary([])
     assert any("prompt-cache" in c for c in summary.caveats)

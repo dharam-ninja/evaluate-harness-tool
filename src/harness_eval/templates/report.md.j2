@@ -89,15 +89,29 @@ Example failure log: {{ row.example_failure_log }}
 
 
 Cost
+{% if r.cost.not_comparable_reason %}
+
+What the run cost:
+Baseline  {{ r.cost.baseline_total_usd | money }} over {{ r.cost.baseline_trial_count }} trial(s)
+Candidate {{ r.cost.candidate_total_usd | money }} over {{ r.cost.candidate_trial_count }} trial(s)
+
+Per successful trial:
+NOT COMPARABLE
+
+{{ r.cost.not_comparable_reason }}. An average per success needs at least one success
+in each arm, so no per-trial figure or delta is reported. The totals above are what
+the run spent, not a verdict: an arm can be cheaper because it failed faster, or
+because it is a local model with no per-token price.
+{% else %}
 
 Baseline:
-{{ r.cost.baseline_usd | money }} per trial
+{{ r.cost.baseline_usd | money }} per successful trial
 {% if r.cost.baseline_tokens %}
 {{ (r.cost.baseline_tokens / 1000) | round | int }}k tokens per trial
 {% endif %}
 
 Candidate:
-{{ r.cost.candidate_usd | money }} per trial
+{{ r.cost.candidate_usd | money }} per successful trial
 {% if r.cost.candidate_tokens %}
 {{ (r.cost.candidate_tokens / 1000) | round | int }}k tokens per trial
 {% endif %}
@@ -106,6 +120,11 @@ Change:
 {{ r.cost.delta_pct | pct }} cost, {{ r.cost.token_delta_pct | pct }} tokens, {{ r.cost.wall_delta_pct | pct }} wall-clock
 
 {{ r.cost.impact | upper }}
+
+Total spent across all trials, successful or not:
+Baseline  {{ r.cost.baseline_total_usd | money }} over {{ r.cost.baseline_trial_count }} trial(s)
+Candidate {{ r.cost.candidate_total_usd | money }} over {{ r.cost.candidate_trial_count }} trial(s)
+{% endif %}
 
 Evidence:
 

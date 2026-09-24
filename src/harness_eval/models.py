@@ -343,6 +343,17 @@ class CostSummary(BaseModel):
     caveats: list[str] = Field(default_factory=list)
     impact_threshold_pct: float = 25.0
 
+    # Observed spend over EVERY trial, successful or not. The comparison above is paired
+    # and filtered on purpose, which is right but can leave every figure reading n/a --
+    # and an n/a is indistinguishable from "the tool failed to capture cost". These
+    # fields record what was actually spent, so the report can always answer "what did
+    # this run cost me" without ever implying the two arms are comparable.
+    baseline_total_usd: float | None = None
+    candidate_total_usd: float | None = None
+    baseline_trial_count: int = 0
+    candidate_trial_count: int = 0
+    not_comparable_reason: str = ""
+
     @property
     def impact(self) -> str:
         """Plain-language verdict on the cost dimension alone."""

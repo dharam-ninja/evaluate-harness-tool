@@ -158,12 +158,21 @@ def cost_summary(comparisons: list[TaskComparison]) -> CostSummary:
     counted = 0
     excluded = 0
 
+    raw = {"baseline": [0.0, 0], "candidate": [0.0, 0]}
+    dropped: list[str] = []
+
     for comp in comparisons:
         arms = {}
         for name in ("baseline", "candidate"):
+            trials = comp.trials.get(name, [])
+            # Raw spend counts every trial, including the ones the comparison drops.
+            for tr in trials:
+                if tr.usage.total_cost_usd is not None:
+                    raw[name][0] += tr.usage.total_cost_usd
+                    raw[name][1] += 1
             ok = [
                 t
-                for t in comp.trials.get(name, [])
+                for t in trials
                 if trial_verdict(t) is True
                 and t.status is TrialStatus.COMPLETED
                 and t.usage.total_cost_usd is not None
@@ -171,6 +180,12 @@ def cost_summary(comparisons: list[TaskComparison]) -> CostSummary:
             arms[name] = ok
         if not arms["baseline"] or not arms["candidate"]:
             excluded += sum(len(v) for v in arms.values())
+            empty = [n for n in ("baseline", "candidate") if not arms[n]]
+            for n in empty:
+                dropped.append(
+                    f"{comp.task_id}: {n} passed 0 of "
+                    f"{len(comp.trials.get(n, []))} trial(s)"
+                )
             continue
         counted += sum(len(v) for v in arms.values())
         b_cost += [t.usage.total_cost_usd or 0.0 for t in arms["baseline"]]
@@ -195,6 +210,11 @@ def cost_summary(comparisons: list[TaskComparison]) -> CostSummary:
         candidate_wall_s=_mean(c_wall),
         trials_counted=counted,
         trials_excluded=excluded,
+        baseline_total_usd=raw["baseline"][0] if raw["baseline"][1] else None,
+        candidate_total_usd=raw["candidate"][0] if raw["candidate"][1] else None,
+        baseline_trial_count=int(raw["baseline"][1]),
+        candidate_trial_count=int(raw["candidate"][1]),
+        not_comparable_reason="; ".join(dropped) if counted == 0 and dropped else "",
     )
     summary.baseline_tokens = int(statistics.fmean(b_tok)) if b_tok else None
     summary.candidate_tokens = int(statistics.fmean(c_tok)) if c_tok else None

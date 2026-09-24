@@ -131,17 +131,21 @@ Candidate passed 8/8 trials
 Cost
 
 Baseline:
-$0.0928 per trial
+$0.0928 per successful trial
 320k tokens per trial
 
 Candidate:
-$0.1161 per trial
+$0.1161 per successful trial
 526k tokens per trial
 
 Change:
 +25.1% cost, +64.2% tokens, +15.9% wall-clock
 
 NEGATIVE IMPACT
+
+Total spent across all trials, successful or not:
+Baseline  $0.7219 over 8 trial(s)
+Candidate $0.9283 over 8 trial(s)
 
 Evidence:
 
